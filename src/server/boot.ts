@@ -6,6 +6,7 @@ import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
 import { autoRegisterModules } from "../registry/auto-loader.js";
+import { healthCheckHandler } from "./health.js";
 
 type TransportMode = "stdio" | "http";
 
@@ -60,6 +61,9 @@ export async function boot(
   app.all("/mcp", (req, res) => {
     void transport.handleRequest(req, res, req.body);
   });
+
+  // Health check endpoint
+  app.get("/health", healthCheckHandler);
 
   const port = Number(process.env.PORT ?? 3000);
   const httpServer = app.listen(port, () => {
