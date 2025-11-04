@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "npm run build && node --test build/tests/**/*.test.js",
-    "coverage": "npm run build && node --test --experimental-test-coverage build/tests/**/*.test.js",
+    "test:coverage": "npm run build && node --test --experimental-test-coverage build/tests/**/*.test.js",
     "test:watch": "node --test --watch \"build/tests/**/*.test.js\"",
     "build": "tsc",
     "lint": "eslint .",
