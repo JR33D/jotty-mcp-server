@@ -2,7 +2,7 @@ import { jottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export const getAllChecklistsModule: RegisterableModule = {
+const getAllChecklistsModule: RegisterableModule = {
   type: 'tool',
   name: 'get_all_checklists',
   description: 'Get all checklists for the authenticated user',

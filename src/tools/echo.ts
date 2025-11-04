@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { RegisterableModule } from "../registry/types.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-export const echoModule: RegisterableModule = {
+const echoModule: RegisterableModule = {
   type: "tool",
   name: "echo",
   description: "Echo back the provided text",

@@ -3,7 +3,7 @@ import { jottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export const createNoteModule: RegisterableModule = {
+const createNoteModule: RegisterableModule = {
   type: 'tool',
   name: 'create_note',
   description: 'Create a new note',

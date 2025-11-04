@@ -2,7 +2,7 @@ import { jottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export const getCategoriesModule: RegisterableModule = {
+const getCategoriesModule: RegisterableModule = {
   type: 'tool',
   name: 'get_categories',
   description: 'Get all available categories',

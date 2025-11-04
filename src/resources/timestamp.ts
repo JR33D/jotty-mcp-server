@@ -7,7 +7,7 @@ type TimestampFormat = "iso" | "unix" | "readable";
 const MIME_TYPE_PLAIN = "text/plain";
 const VALID_FORMATS: Array<TimestampFormat> = ["iso", "unix", "readable"];
 
-export const timestampModule: RegisterableModule = {
+const timestampModule: RegisterableModule = {
   type: "resource",
   name: "timestamp",
   description: "Get current timestamp in various formats",

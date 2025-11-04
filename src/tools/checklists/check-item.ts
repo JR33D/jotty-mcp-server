@@ -3,7 +3,7 @@ import { jottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export const checkItemModule: RegisterableModule = {
+const checkItemModule: RegisterableModule = {
   type: 'tool',
   name: 'check_item',
   description: 'Mark an item in a checklist as complete',

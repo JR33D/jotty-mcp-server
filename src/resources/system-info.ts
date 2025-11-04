@@ -21,7 +21,7 @@ export const systemInfoHandler = (osModule: typeof os = os): { contents: [{ uri:
   };
 };
 
-export const systemInfoModule: RegisterableModule = {
+const systemInfoModule: RegisterableModule = {
   type: "resource",
   name: "system-info",
   description: "Get basic system information about the server",

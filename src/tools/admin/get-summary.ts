@@ -3,7 +3,7 @@ import { jottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export const getSummaryModule: RegisterableModule = {
+const getSummaryModule: RegisterableModule = {
   type: 'tool',
   name: 'get_summary',
   description: 'Get summary statistics from your Jotty account',

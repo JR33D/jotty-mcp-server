@@ -3,7 +3,7 @@ import { jottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export const uncheckItemModule: RegisterableModule = {
+const uncheckItemModule: RegisterableModule = {
   type: 'tool',
   name: 'uncheck_item',
   description: 'Mark an item in a checklist as incomplete',

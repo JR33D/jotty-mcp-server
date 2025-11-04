@@ -3,7 +3,7 @@ import { jottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-export const exportDataModule: RegisterableModule = {
+const exportDataModule: RegisterableModule = {
   type: 'tool',
   name: 'export_data',
   description: 'Starts a full export of your Jotty data',
