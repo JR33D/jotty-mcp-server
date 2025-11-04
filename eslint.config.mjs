@@ -235,7 +235,14 @@ export default tseslint.config(
   },
   {
     // Allow default exports for registerable modules
-    files: ['src/tools/*.ts', 'src/resources/*.ts', 'src/prompts/*.ts', 'examples/*.ts'],
+    files: ['src/tools/**/*.ts', 'src/resources/**/*.ts', 'src/prompts/**/*.ts'],
+    rules: {
+      'import/no-default-export': 'off',
+    }
+  },
+  {
+    // Allow default exports for registerable modules
+    files: ['src/tools/**/*.ts', 'src/resources/**/*.ts', 'src/prompts/**/*.ts'],
     rules: {
       'import/no-default-export': 'off',
     }
