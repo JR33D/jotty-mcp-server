@@ -36,8 +36,7 @@ describe("System Info Resource Unit Tests", () => {
     sandbox.stub(process, "version").value("v20.0.0");
 
     const response = systemInfoHandler(mockOs);
-    assert(response.contents[0] != null);
-    const systemInfo: { platform: string, architecture: string, nodeVersion: string, uptime: number, totalMemory: number, freeMemory: number } = JSON.parse(response.contents[0].text);
+    const systemInfo = JSON.parse(response.contents[0].text) as { platform: string, architecture: string, nodeVersion: string, uptime: number, totalMemory: number, freeMemory: number };
 
     assert.deepStrictEqual(systemInfo, mockSystemInfo);
   });

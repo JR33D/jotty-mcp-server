@@ -14,7 +14,7 @@ describe("Timestamp Resource Unit Tests", () => {
     sandbox.useFakeTimers(testDate);
 
     const serverMock = {
-      registerResource: (name: string, template: ResourceTemplate, options: unknown, handler: (uri: URL, params: { format: string | undefined }) => {
+      registerResource: (name: string, _template: ResourceTemplate, _options: unknown, handler: (uri: URL, params: { format: string | undefined }) => {
     contents: Array<{ uri: string, mimeType: string, text: string }> }) => {
         if (name === 'timestamp') {
           resourceHandler = handler;

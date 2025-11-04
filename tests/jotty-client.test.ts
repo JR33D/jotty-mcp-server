@@ -17,7 +17,7 @@ const mockExportProgressResponse = (): Promise<Response> => Promise.resolve(new 
 const mockNotFoundResponse = (): Promise<Response> => Promise.resolve(new Response(JSON.stringify({ message: 'Not Found' }), { status: 404, statusText: 'Not Found', headers: { 'Content-Type': 'application/json' } }));
 
 let sandbox: sinon.SinonSandbox;
-let fetchStub: sinon.SinonStub;
+let _fetchStub: sinon.SinonStub;
 
 function checkChecklistsEndpointsCalled(url: string | URL | Request, options?: RequestInit) : Promise<Response> | undefined {
   const urlString = typeof url === 'string' ? url : (url instanceof URL ? url.toString() : (url).url);
@@ -84,7 +84,7 @@ function checkExportsEndpointsCalled(url: string | URL | Request, options?: Requ
 
 test.beforeEach(() => {
   sandbox = sinon.createSandbox();
-  fetchStub = sandbox.stub(global, 'fetch').callsFake((url: string | URL | Request, options?: RequestInit) => {
+  _fetchStub = sandbox.stub(global, 'fetch').callsFake((url: string | URL | Request, options?: RequestInit) => {
     let response: Promise<Response> | undefined;
     response = checkChecklistsEndpointsCalled(url, options);
     response = response ?? checkNotesEndpointsCalled(url, options);
