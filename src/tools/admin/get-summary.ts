@@ -33,3 +33,5 @@ export const getSummaryModule: RegisterableModule = {
     );
   },
 };
+
+export default getSummaryModule;

@@ -37,3 +37,5 @@ export const systemInfoModule: RegisterableModule = {
     );
   }
 };
+
+export default systemInfoModule;

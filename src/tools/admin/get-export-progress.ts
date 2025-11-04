@@ -29,3 +29,5 @@ export const getExportProgressModule: RegisterableModule = {
     );
   },
 };
+
+export default getExportProgressModule;

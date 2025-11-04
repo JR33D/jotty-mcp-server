@@ -32,3 +32,5 @@ export const addChecklistItemModule: RegisterableModule = {
     );
   },
 };
+
+export default addChecklistItemModule;

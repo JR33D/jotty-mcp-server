@@ -30,3 +30,5 @@ export const uncheckItemModule: RegisterableModule = {
     );
   },
 };
+
+export default uncheckItemModule;

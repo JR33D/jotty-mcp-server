@@ -29,3 +29,5 @@ export const getUserInfoModule: RegisterableModule = {
     );
   },
 };
+
+export default getUserInfoModule;

@@ -27,3 +27,5 @@ export const echoModule: RegisterableModule = {
     );
   }
 };
+
+export default echoModule;

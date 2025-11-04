@@ -25,3 +25,5 @@ export const getAllChecklistsModule: RegisterableModule = {
     );
   },
 };
+
+export default getAllChecklistsModule;

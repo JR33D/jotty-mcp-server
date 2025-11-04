@@ -25,3 +25,5 @@ export const getCategoriesModule: RegisterableModule = {
     );
   },
 };
+
+export default getCategoriesModule;

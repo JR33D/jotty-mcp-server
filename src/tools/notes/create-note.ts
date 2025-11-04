@@ -31,3 +31,5 @@ export const createNoteModule: RegisterableModule = {
     );
   },
 };
+
+export default createNoteModule;

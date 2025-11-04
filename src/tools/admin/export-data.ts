@@ -30,3 +30,5 @@ export const exportDataModule: RegisterableModule = {
     );
   },
 };
+
+export default exportDataModule;

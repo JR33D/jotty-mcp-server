@@ -25,3 +25,5 @@ export const getAllNotesModule: RegisterableModule = {
     );
   },
 };
+
+export default getAllNotesModule;

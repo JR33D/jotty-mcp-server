@@ -30,3 +30,5 @@ export const checkItemModule: RegisterableModule = {
     );
   },
 };
+
+export default checkItemModule;

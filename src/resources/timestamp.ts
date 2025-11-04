@@ -94,3 +94,5 @@ export const timestampModule: RegisterableModule = {
     );
   }
 };
+
+export default timestampModule;

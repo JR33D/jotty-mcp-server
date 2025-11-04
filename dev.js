@@ -39,7 +39,7 @@ console.log(`${CYAN}🚀 Starting MCP Server in development mode...${RESET}`);
 console.log(`${DIM}You can now paste JSON-RPC messages to interact with the server.${RESET}\n`);
 
 // Start the MCP server
-const serverPath = join(__dirname, 'build', 'index.js');
+const serverPath = join(__dirname, 'build', 'src', 'index.js');
 const server = spawn('node', [serverPath], {
   stdio: ['pipe', 'pipe', 'pipe']
 });
