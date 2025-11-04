@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
-import sinon from "sinon";
+import * as sinon from "sinon";
 import { timestampModule } from "../src/resources/timestamp.js";
 import type { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 

@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
-import sinon from "sinon";
+import * as sinon from "sinon";
 import { jottyClient, type Checklist, type ChecklistItem } from "../src/lib/jotty-client.js";
 import { addChecklistItemModule } from "../src/tools/checklists/add-checklist-item.js";
 import { checkItemModule } from "../src/tools/checklists/check-item.js";

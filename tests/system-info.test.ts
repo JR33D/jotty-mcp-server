@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
-import sinon from "sinon";
+import * as sinon from "sinon";
 import { systemInfoHandler } from "../src/resources/system-info.js";
 import type * as os from "os";
 

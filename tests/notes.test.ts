@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
-import sinon from "sinon";
+import * as sinon from "sinon";
 import { jottyClient, type JottyNote } from "../src/lib/jotty-client.js";
 import { createNoteModule } from "../src/tools/notes/create-note.js";
 import { getAllNotesModule } from "../src/tools/notes/get-all-notes.js";

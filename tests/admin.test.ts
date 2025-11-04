@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
-import sinon from "sinon";
+import * as sinon from "sinon";
 import { jottyClient, type Category, type ExportStatus, type SummaryStats, type UserInfo } from "../src/lib/jotty-client.js";
 import { exportDataModule } from "../src/tools/admin/export-data.js";
 import { getCategoriesModule } from "../src/tools/admin/get-categories.js";

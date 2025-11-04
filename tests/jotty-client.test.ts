@@ -47,28 +47,52 @@ function checkNotesEndpointsCalled(url: string | URL | Request, options?: Reques
   return undefined;
 }
 
-test.beforeEach(() => {
-  sandbox = sinon.createSandbox();
-  fetchStub = sandbox.stub(global, 'fetch').callsFake((url: string | URL | Request, options?: RequestInit) => {
-    const urlString = typeof url === 'string' ? url : (url instanceof URL ? url.toString() : (url).url);
-    let response: Promise<Response> | undefined;
-    response = checkChecklistsEndpointsCalled(url, options);
-    response = response ?? checkNotesEndpointsCalled(url, options);
-    if (urlString.endsWith('/api/categories') && options?.method === 'GET') {
-      return mockCategoriesResponse();
-    }
-    if (urlString.endsWith('/api/summary') && options?.method === 'GET') {
-      return mockSummaryResponse();
-    }
+function checkCategoriesEndpointsCalled(url: string | URL | Request, options?: RequestInit) : Promise<Response> | undefined {
+  const urlString = typeof url === 'string' ? url : (url instanceof URL ? url.toString() : (url).url);
+  if (urlString.endsWith('/api/categories') && options?.method === 'GET') {
+    return mockCategoriesResponse();
+  }
+  return undefined;
+}
+
+function checkSummaryEndpointsCalled(url: string | URL | Request, options?: RequestInit) : Promise<Response> | undefined {
+  const urlString = typeof url === 'string' ? url : (url instanceof URL ? url.toString() : (url).url);
+  if (urlString.endsWith('/api/summary') && options?.method === 'GET') {
+    return mockSummaryResponse();
+  }
+  return undefined;
+}
+
+function checkUserEndpointsCalled(url: string | URL | Request, options?: RequestInit) : Promise<Response> | undefined {
+  const urlString = typeof url === 'string' ? url : (url instanceof URL ? url.toString() : (url).url);
     if (urlString.includes('/api/user/') && options?.method === 'GET') {
       return mockUserInfoResponse();
     }
-    if (urlString.endsWith('/api/exports') && options?.method === 'POST') {
-      return mockExportDataResponse();
-    }
-    if (urlString.includes('/api/exports/') && (/\/api\/exports\/[^/]+$/.exec(urlString) != null) && options?.method === 'GET') {
-      return mockExportProgressResponse();
-    }
+  return undefined;
+}
+
+function checkExportsEndpointsCalled(url: string | URL | Request, options?: RequestInit) : Promise<Response> | undefined {
+  const urlString = typeof url === 'string' ? url : (url instanceof URL ? url.toString() : (url).url);
+  if (urlString.endsWith('/api/exports') && options?.method === 'POST') {
+    return mockExportDataResponse();
+  }
+  if (urlString.includes('/api/exports/') && (/\/api\/exports\/[^/]+$/.exec(urlString) != null) && options?.method === 'GET') {
+    return mockExportProgressResponse();
+  }
+  return undefined;
+}
+
+test.beforeEach(() => {
+  sandbox = sinon.createSandbox();
+  fetchStub = sandbox.stub(global, 'fetch').callsFake((url: string | URL | Request, options?: RequestInit) => {
+    let response: Promise<Response> | undefined;
+    response = checkChecklistsEndpointsCalled(url, options);
+    response = response ?? checkNotesEndpointsCalled(url, options);
+    response = response ?? checkCategoriesEndpointsCalled(url, options);
+    response = response ?? checkSummaryEndpointsCalled(url, options);
+    response = response ?? checkUserEndpointsCalled(url, options);
+    response = response ?? checkExportsEndpointsCalled(url, options);
+
     return response ?? mockNotFoundResponse();
   });
 });

@@ -2,7 +2,7 @@
   "name": "jotty-mcp-server",
   "version": "0.1.0",
   "description": "MCP server for Jotty checklist and note management",
-  "main": "index.js",
+  "main": "build/index.js",
   "type": "module",
   "scripts": {
     "test": "npm run build && node --test build/tests/**/*.test.js",
@@ -48,6 +48,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.4",
     "@types/node": "^24.9.1",
+    "@types/sinon": "^17.0.4",
     "@typescript-eslint/parser": "^8.46.2",
     "cross-env": "^10.1.0",
     "eslint": "^9.38.0",
