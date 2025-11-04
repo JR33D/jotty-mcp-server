@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  jotty-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jotty-mcp-server
+    environment:
+      - STARTER_TRANSPORT=http
+      - PORT=3000
+      - CORS_ORIGIN=*
+      - NODE_ENV=production
+      - JOTTY_BASE_URL=${JOTTY_BASE_URL}
+      - JOTTY_API_KEY=${JOTTY_API_KEY}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/mcp', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # Optional: Add a development version with hot reload
+  jotty-mcp-server-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    container_name: jotty-mcp-server-dev
+    environment:
+      - STARTER_TRANSPORT=http
+      - PORT=3001
+      - CORS_ORIGIN=*
+      - NODE_ENV=development
+      - JOTTY_BASE_URL=${JOTTY_BASE_URL}
+      - JOTTY_API_KEY=${JOTTY_API_KEY}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./src:/app/src
+      - ./build:/app/build
+    command: ["npm", "run", "serve:http"]
+    profiles:
+      - dev

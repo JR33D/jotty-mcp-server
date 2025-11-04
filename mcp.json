@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "starter-stdio": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./build/index.js"
+      ]
+    },
+    "starter-http": {
+      "type": "http",
+      "url": "http://localhost:3000/mcp"
+    }
+  }
+}
