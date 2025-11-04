@@ -41,6 +41,7 @@ jobs:
           echo "Checking if build was successful..."
           ls -la build/src
           test -f build/src/index.js
+          test -d build/tests
 
   test:
     name: Run Tests

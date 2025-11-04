@@ -2,21 +2,21 @@
   "name": "jotty-mcp-server",
   "version": "0.1.0",
   "description": "MCP server for Jotty checklist and note management",
-  "main": "build/index.js",
+  "main": "build/src/index.js",
   "type": "module",
   "scripts": {
     "test": "npm run build && node --test build/tests/**/*.test.js",
     "coverage": "npm run build && node --test --experimental-test-coverage build/tests/**/*.test.js",
-    "test:watch": "node --test --watch \"tests/**/*.test.ts\"",
+    "test:watch": "node --test --watch \"build/tests/**/*.test.js\"",
     "build": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "inspect": "npm run build && npx @modelcontextprotocol/inspector node build/index.js",
+    "inspect": "npm run build && npx @modelcontextprotocol/inspector node build/src/index.js",
     "inspect:http": "npm run build && npx @modelcontextprotocol/inspector http://localhost:3000/mcp",
     "dev": "npm run build && node dev",
-    "serve:stdio": "npm run build && cross-env STARTER_TRANSPORT=stdio node build/index.js",
-    "serve:http": "npm run build && cross-env STARTER_TRANSPORT=http PORT=3000 node build/index.js",
+    "serve:stdio": "npm run build && cross-env STARTER_TRANSPORT=stdio node build/src/index.js",
+    "serve:http": "npm run build && cross-env STARTER_TRANSPORT=http PORT=3000 node build/src/index.js",
     "gen:tool": "hygen tool new",
     "gen:prompt": "hygen prompt new",
     "gen:resource": "hygen resource new",
@@ -61,7 +61,7 @@
     "typescript-eslint": "^8.46.2"
   },
   "bin": {
-    "jotty-mcp-server": "./build/index.js"
+    "jotty-mcp-server": "./build/src/index.js"
   },
   "files": [
     "build"
