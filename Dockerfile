@@ -19,7 +19,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy built files and production dependencies
-COPY --from=build /app/build ./build
+COPY --from=build /app/build/src ./build
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/mcp.json ./
 COPY --from=build /app/.vscode/mcp.json ./.vscode/
