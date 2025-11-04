@@ -84,6 +84,8 @@ function checkExportsEndpointsCalled(url: string | URL | Request, options?: Requ
 
 test.beforeEach(() => {
   sandbox = sinon.createSandbox();
+  sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
+  sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
   _fetchStub = sandbox.stub(global, 'fetch').callsFake((url: string | URL | Request, options?: RequestInit) => {
     let response: Promise<Response> | undefined;
     response = checkChecklistsEndpointsCalled(url, options);

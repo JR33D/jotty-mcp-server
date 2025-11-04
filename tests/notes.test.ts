@@ -12,6 +12,8 @@ describe("create_note Tool Unit Tests", () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
+    sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
     const serverMock = {
       tool: (name: string, _description: string, _schema: unknown, handler: (args: {
     title: string;
@@ -78,6 +80,8 @@ describe("get_all_notes Tool Unit Tests", () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
+    sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
     const serverMock = {
       tool: (name: string, _description: string, _schema: unknown, handler: () => Promise<{
     content: Array<{

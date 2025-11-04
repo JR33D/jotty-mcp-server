@@ -13,6 +13,8 @@ describe("Checklist Tool Unit Tests", () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
+    sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
   });
 
   afterEach(() => {
