@@ -2,11 +2,11 @@ import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
 import { jottyClient, type Category, type ExportStatus, type SummaryStats, type UserInfo } from "../src/lib/jotty-client.js";
-import { exportDataModule } from "../src/tools/admin/export-data.js";
-import { getCategoriesModule } from "../src/tools/admin/get-categories.js";
-import { getExportProgressModule } from "../src/tools/admin/get-export-progress.js";
-import { getSummaryModule } from "../src/tools/admin/get-summary.js";
-import { getUserInfoModule } from "../src/tools/admin/get-user-info.js";
+import exportDataModule from "../src/tools/admin/export-data.js";
+import getCategoriesModule from "../src/tools/admin/get-categories.js";
+import getExportProgressModule from "../src/tools/admin/get-export-progress.js";
+import getSummaryModule from "../src/tools/admin/get-summary.js";
+import getUserInfoModule from "../src/tools/admin/get-user-info.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 describe("Admin Tool Unit Tests", () => {

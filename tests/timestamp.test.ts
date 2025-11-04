@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
-import { timestampModule } from "../src/resources/timestamp.js";
+import timestampModule from "../src/resources/timestamp.js";
 import type { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 describe("Timestamp Resource Unit Tests", () => {

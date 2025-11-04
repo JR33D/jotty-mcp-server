@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it, beforeEach } from "node:test";
-import { echoModule } from "../src/tools/echo.js";
+import echoModule from "../src/tools/echo.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 describe("Echo Tool Unit Tests", () => {

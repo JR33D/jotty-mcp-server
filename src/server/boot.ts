@@ -5,8 +5,8 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
-import { autoRegisterModules } from "../registry/auto-loader.js";
 import { healthCheckHandler } from "./health.js";
+import { autoRegisterModules } from "../registry/auto-loader.js";
 
 type TransportMode = "stdio" | "http";
 
