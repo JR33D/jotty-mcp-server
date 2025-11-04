@@ -2,9 +2,7 @@ version: "3.9"
 
 services:
   jotty-mcp-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: git.jreed.me/JReed/jotty-mcp-server:latest
     container_name: jotty-mcp-server
     environment:
       - STARTER_TRANSPORT=http
