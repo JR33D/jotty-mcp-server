@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -6,8 +5,9 @@ import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
 import { healthCheckHandler } from "./health.js";
-import logger from "../logger.js"; // Our OTel-integrated logger
+import { logger } from "../logger.js";
 import { autoRegisterModules } from "../registry/auto-loader.js";
+import type { Request, Response } from "express";
 
 type TransportMode = "stdio" | "http";
 
@@ -50,7 +50,11 @@ export async function boot(mode?: TransportMode): Promise<void> {
       url: req.url,
       ip: req.ip,
       headers: req.headers,
-      body: req.body,
+      body: req.body as unknown,
+    });
+    logger.info(`Outgoing Response`, {
+      ip: req.ip,
+      body: res.json as unknown,
     });
     next();
   });
@@ -65,18 +69,36 @@ export async function boot(mode?: TransportMode): Promise<void> {
       exposedHeaders: ["x-mcp-session-id"],
     })
   );
-  // Prevent express.json() from touching MCP traffic
-  app.use("/mcp", express.raw({ type: "*/*" }));
-
-  const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: () => randomUUID(),
-  });
-
-  await server.connect(transport);
 
   // Handle MCP JSON-RPC + SSE streaming correctly
-  app.all("/mcp", (req, res) => {
-    void transport.handleRequest(req, res);
+  app.all("/mcp", async (req: Request, res: Response) => {
+    try {
+      const transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: undefined,
+      });
+
+      res.on("close", () => {
+        void transport.close();
+        void server.close();
+        logger.info("Closed transport due to client disconnect");
+      });
+
+      await server.connect(transport);
+
+      void transport.handleRequest(req, res, req.body);
+    } catch (error: unknown) {
+      logger.error("Error handling /mcp request:", error);
+      if (!res.headersSent) {
+        res.status(500).json({
+          jsonrpc: "2.0",
+          error: {
+            code: -32603,
+            message: "Internal Server Error",
+          },
+          id: null,
+        });
+      }
+    }
   });
 
   // Health check endpoint
@@ -99,6 +121,7 @@ export async function boot(mode?: TransportMode): Promise<void> {
       if (!res.headersSent) {
         res.status(500).send("Internal Server Error");
       }
+      next();
     }
   );
 
@@ -116,7 +139,6 @@ export async function boot(mode?: TransportMode): Promise<void> {
 
   process.on("SIGINT", () => {
     logger.info("Shutting down HTTP server...");
-    void transport.close();
     httpServer.close(() => {
       process.exit(0);
     });

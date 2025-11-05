@@ -65,7 +65,7 @@ export default tseslint.config(
       }],
       
       // Prefer single object parameter for functions with multiple arguments
-      'max-params': ['warn', { max: 3 }],
+      'max-params': ['warn', { max: 5 }],
       
       // Complexity rule - limit cyclomatic complexity
       'complexity': ['error', { max: 20, variant: 'classic' }],
