@@ -8,9 +8,9 @@ services:
       - STARTER_TRANSPORT=http
       - PORT=3000
       - CORS_ORIGIN=*
-      - NODE_ENV=production
       - JOTTY_BASE_URL=${JOTTY_BASE_URL}
       - JOTTY_API_KEY=${JOTTY_API_KEY}
+      - API_KEY=${API_KEY}
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -35,6 +35,7 @@ services:
       - NODE_ENV=development
       - JOTTY_BASE_URL=${JOTTY_BASE_URL}
       - JOTTY_API_KEY=${JOTTY_API_KEY}
+      - API_KEY=${API_KEY}
     ports:
       - "3001:3001"
     volumes:

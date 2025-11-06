@@ -2,6 +2,17 @@
 
 This document provides a comprehensive reference for all the MCP tools exposed by the Jotty MCP Server.
 
+## Authentication
+
+When using the HTTP transport, all requests to the `/mcp` endpoint must be authenticated. This is done by providing an API key in the `Authorization` header.
+
+-   **Header:** `Authorization`
+-   **Format:** `ApiKey <your-api-key>`
+
+Replace `<your-api-key>` with the value you set for the `API_KEY` environment variable in your `.env` file.
+
+Requests without a valid API key will be rejected with a `401 Unauthorized` status code.
+
 ---
 
 ## Checklist Tools

@@ -4,6 +4,7 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
+import { apiKeyAuth } from "./auth.js";
 import { healthCheckHandler } from "./health.js";
 import { logger } from "../logger.js";
 import { autoRegisterModules } from "../registry/auto-loader.js";
@@ -65,13 +66,13 @@ export async function boot(mode?: TransportMode): Promise<void> {
       origin: corsOrigin,
       credentials: true,
       methods: ["GET", "POST", "OPTIONS", "DELETE"],
-      allowedHeaders: ["Content-Type", "x-mcp-session", "x-mcp-session-id"],
+      allowedHeaders: ["Content-Type", "x-mcp-session", "x-mcp-session-id", "Authorization"],
       exposedHeaders: ["x-mcp-session-id"],
     })
   );
 
   // Handle MCP JSON-RPC + SSE streaming correctly
-  app.all("/mcp", async (req: Request, res: Response) => {
+  app.all("/mcp", apiKeyAuth, async (req: Request, res: Response) => {
     try {
       const transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: undefined,

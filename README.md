@@ -54,7 +54,16 @@ npm install
     JOTTY_API_KEY=ck_xxxxxxxxxxxxxxxx
     ```
 
-2.  **CORS Origin (for HTTP transport):**
+2.  **Server API Key (for HTTP transport):**
+    If you are using the HTTP transport, you must set an `API_KEY` in your `.env` file. This key is used to authenticate requests to the MCP server.
+
+    ```
+    API_KEY=your-secret-api-key
+    ```
+
+    You can generate a secure key using a UUID generator or any other random string generator.
+
+3.  **CORS Origin (for HTTP transport):**
     If you are using the HTTP transport and accessing the server from a different domain, ensure `CORS_ORIGIN` in your `.env` file (or `docker-compose.yml`) is configured correctly. By default, it's set to `*` (allowing all origins).
 
 ## Usage
@@ -94,7 +103,7 @@ docker-compose up --build
 2.  In Claude Desktop, navigate to `Settings > Model Context`.
 3.  Click "Add Server" and configure it:
     *   **For stdio transport:** Select "Standard I/O" and point to the server executable (e.g., `node build/index.js` after running `npm run build`).
-    *   **For HTTP transport:** Select "HTTP" and enter the server URL (e.g., `http://localhost:3000/mcp`).
+    *   **For HTTP transport:** Select "HTTP" and enter the server URL (e.g., `http://localhost:3000/mcp`). You will also need to add a header for authentication. Click "Add Header", and enter `Authorization` for the header name and `ApiKey your-secret-api-key` for the value (replacing `your-secret-api-key` with the key you set in your `.env` file).
 4.  The Jotty tools will now be available for use in your Claude conversations.
 
 ## Testing
