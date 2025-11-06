@@ -1,13 +1,25 @@
 import { z } from 'zod';
-import { jottyClient } from '../../lib/jotty-client.js';
+import type { JottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const createNoteModule: RegisterableModule = {
+export type CreateNoteModuleDeps = {
+  jottyClient: JottyClient;
+};
+
+const createNoteModule: RegisterableModule<CreateNoteModuleDeps> = {
   type: 'tool',
   name: 'NoteCreator',
   description: 'Facilitates the creation of new notes for the authenticated user via the Jotty API. This tool allows agents to add new textual information to the user\'s collection within the MCP system.',
-  register: (server: McpServer) => {
+  register: (server: McpServer, deps?: CreateNoteModuleDeps) => {
+    const getClient = async (): Promise<JottyClient> => {
+      if (deps?.jottyClient !== undefined) {
+        return deps.jottyClient;
+      }
+      const { getJottyClient } = await import('../../lib/jotty-client.js');
+      return await getJottyClient();
+    };
+
     server.tool(
       'NoteCreator',
       'Facilitates the creation of new notes for the authenticated user via the Jotty API. This tool allows agents to add new textual information to the user\'s collection within the MCP system.',
@@ -18,7 +30,8 @@ const createNoteModule: RegisterableModule = {
       },
       async (args) => {
         const { title, content, category } = args;
-        const note = await jottyClient.createNote({ title, content: content ?? '', category });
+        const client = await getClient();
+        const note = await client.createNote({ title, content: content ?? '', category });
         return {
           content: [
             {

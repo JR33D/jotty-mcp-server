@@ -1,6 +1,4 @@
-import { env } from '../config.js';
-
-// --- Type Definitions for Jotty API Responses ---
+import type { Config } from '../config.js';
 
 export type ChecklistItem = {
   text: string;
@@ -52,15 +50,13 @@ export type ExportStatus = {
   error?: string;
 }
 
-// --- JottyClient Class ---
-
 export class JottyClient {
   private readonly baseUrl: string;
   private readonly apiKey: string;
 
-  constructor() {
-    this.baseUrl = env.JOTTY_BASE_URL;
-    this.apiKey = env.JOTTY_API_KEY;
+  constructor(config: Config) {
+    this.baseUrl = config.JOTTY_BASE_URL;
+    this.apiKey = config.JOTTY_API_KEY;
   }
 
   private async makeRequest<T>(
@@ -101,12 +97,10 @@ export class JottyClient {
     }
   }
 
-  // 1. GET /api/checklists - Get all checklists
   async getAllChecklists(): Promise<Array<Checklist>> {
     return this.makeRequest<Array<Checklist>>('/api/checklists');
   }
 
-  // 2. POST /api/checklists/{id}/items - Add item to checklist
   async addChecklistItem(
     id: string,
     item: { text: string; status?: 'todo' | 'done' | 'in_progress' | 'paused'; time?: number }
@@ -114,50 +108,57 @@ export class JottyClient {
     return this.makeRequest<ChecklistItem>(`/api/checklists/${id}/items`, 'POST', item);
   }
 
-  // 3. PUT /api/checklists/{id}/items/{index}/check - Mark item complete
   async checkItem(id: string, index: number): Promise<ChecklistItem> {
     return this.makeRequest<ChecklistItem>(`/api/checklists/${id}/items/${index.toString()}/check`, 'PUT');
   }
 
-  // 4. PUT /api/checklists/{id}/items/{index}/uncheck - Mark item incomplete
   async uncheckItem(id: string, index: number): Promise<ChecklistItem> {
     return this.makeRequest<ChecklistItem>(`/api/checklists/${id}/items/${index.toString()}/uncheck`, 'PUT');
   }
 
-  // 5. GET /api/notes - Get all notes
   async getAllNotes(): Promise<Array<JottyNote>> {
     return this.makeRequest<Array<JottyNote>>('/api/notes');
   }
 
-  // 6. POST /api/notes - Create note
   async createNote(note: { title: string; content: string; category?: string }): Promise<JottyNote> {
     return this.makeRequest<JottyNote>('/api/notes', 'POST', note);
   }
 
-  // 7. GET /api/categories - Get categories
   async getCategories(): Promise<Array<Category>> {
     return this.makeRequest<Array<Category>>('/api/categories');
   }
 
-  // 8. GET /api/summary - Get statistics
   async getSummary(): Promise<SummaryStats> {
     return this.makeRequest<SummaryStats>('/api/summary');
   }
 
-  // 9. GET /api/user/{username} - Get user info
   async getUserInfo(username: string): Promise<UserInfo> {
     return this.makeRequest<UserInfo>(`/api/user/${username}`);
   }
 
-  // 10. POST /api/exports - Export data
   async exportData(type: 'json' | 'csv', username?: string): Promise<{ exportId: string }> {
     return this.makeRequest<{ exportId: string }>('/api/exports', 'POST', { type, username });
   }
 
-  // 11. GET /api/exports - Get export progress
   async getExportProgress(exportId: string): Promise<ExportStatus> {
     return this.makeRequest<ExportStatus>(`/api/exports/${exportId}`);
   }
 }
 
-export const jottyClient = new JottyClient();
+export function createJottyClient(config: Config): JottyClient {
+  return new JottyClient(config);
+}
+
+let defaultClient: JottyClient | undefined;
+
+export async function getJottyClient(): Promise<JottyClient> {
+  if (defaultClient === undefined) {
+    const { getConfig } = await import('../config.js');
+    defaultClient = createJottyClient(getConfig());
+  }
+  return defaultClient;
+}
+
+export function resetJottyClient(): void {
+  defaultClient = undefined;
+}

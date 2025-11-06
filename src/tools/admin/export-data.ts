@@ -1,13 +1,25 @@
 import { z } from 'zod';
-import { jottyClient } from '../../lib/jotty-client.js';
+import type { JottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const exportDataModule: RegisterableModule = {
+export type ExportDataModuleDeps = {
+  jottyClient: JottyClient;
+};
+
+const exportDataModule: RegisterableModule<ExportDataModuleDeps> = {
   type: 'tool',
   name: 'DataExporter',
   description: 'Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.',
-  register: (server: McpServer) => {
+  register: (server: McpServer, deps?: ExportDataModuleDeps) => {
+    const getClient = async (): Promise<JottyClient> => {
+      if (deps?.jottyClient !== undefined) {
+        return deps.jottyClient;
+      }
+      const { getJottyClient } = await import('../../lib/jotty-client.js');
+      return await getJottyClient();
+    };
+
     server.tool(
       'DataExporter',
       'Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.',
@@ -17,7 +29,8 @@ const exportDataModule: RegisterableModule = {
       },
       async (args) => {
         const { type, username } = args;
-        const exportResult = await jottyClient.exportData(type, username);
+        const client = await getClient();
+        const exportResult = await client.exportData(type, username);
         return {
           content: [
             {

@@ -1,18 +1,31 @@
-import { jottyClient } from '../../lib/jotty-client.js';
+import type { JottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const getAllChecklistsModule: RegisterableModule = {
+export type GetAllChecklistsModuleDeps = {
+  jottyClient: JottyClient;
+};
+
+const getAllChecklistsModule: RegisterableModule<GetAllChecklistsModuleDeps> = {
   type: 'tool',
   name: 'AllChecklistsFetcher',
   description: 'Retrieves all checklists associated with the authenticated user from the Jotty API. This tool provides agents with access to the user\'s complete list of checklists within the MCP system.',
-  register: (server: McpServer) => {
+  register: (server: McpServer, deps?: GetAllChecklistsModuleDeps) => {
+    const getClient = async (): Promise<JottyClient> => {
+      if (deps?.jottyClient !== undefined) {
+        return deps.jottyClient;
+      }
+      const { getJottyClient } = await import('../../lib/jotty-client.js');
+      return await getJottyClient();
+    };
+
     server.tool(
       'AllChecklistsFetcher',
       'Retrieves all checklists associated with the authenticated user from the Jotty API. This tool provides agents with access to the user\'s complete list of checklists within the MCP system.',
       {},
       async () => {
-        const checklists = await jottyClient.getAllChecklists();
+        const client = await getClient();
+        const checklists = await client.getAllChecklists();
         return {
           content: [
             {

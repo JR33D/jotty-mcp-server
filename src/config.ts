@@ -9,4 +9,19 @@ const envSchema = z.object({
   API_KEY: z.string().min(1),
 });
 
-export const env = envSchema.parse(process.env);
+export type Config = z.infer<typeof envSchema>;
+
+export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
+  return envSchema.parse(env);
+}
+
+let cachedConfig: Config | undefined;
+
+export function getConfig(): Config {
+  cachedConfig ??= loadConfig();
+  return cachedConfig;
+}
+
+export function resetConfig(): void {
+  cachedConfig = undefined;
+}
