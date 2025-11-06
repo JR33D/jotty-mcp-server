@@ -118,32 +118,32 @@ jobs:
             This release is available as Docker images for multiple architectures:
 
             ### Pull the image
-            `bash`
+            \`\`\`bash
             # Latest version
             docker pull ghcr.io/${{ github.repository }}:latest
 
             # Specific version
             docker pull ghcr.io/${{ github.repository }}:${version}
             docker pull ghcr.io/${{ github.repository }}:v${version}
-            `
+            \`\`\`
 
             ### Supported Architectures
             - linux/amd64
             - linux/arm64
 
             ### Quick Start
-            `bash`
+            \`\`\`bash
             docker run -d \
               -p 3000:3000 \
               -e JOTTY_BASE_URL=http://localhost:1122 \
               -e JOTTY_API_KEY=your-jotty-api-key \
               -e API_KEY=your-api-key \
               ghcr.io/${{ github.repository }}:${version}
-            `
+            \`\`\`
 
             See [docker-compose.yml](https://github.com/${{ github.repository }}/blob/${tagName}/docker-compose.yml) for full configuration example.
             `;
-
+            
             // Update release body
             await github.rest.repos.updateRelease({
               owner: context.repo.owner,
