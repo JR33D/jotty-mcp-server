@@ -1,25 +1,29 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
-import { jottyClient, type JottyNote } from "../src/lib/jotty-client.js";
+import { createTestConfig } from "./helpers/test-config.js";
+import { createJottyClient, type JottyNote } from "../src/lib/jotty-client.js";
 import createNoteModule from "../src/tools/notes/create-note.js";
 import getAllNotesModule from "../src/tools/notes/get-all-notes.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 describe("create_note Tool Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
-  let createNoteHandler: (args: { title: string; content?: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
+  let testClient: ReturnType<typeof createJottyClient>;
+  let createNoteHandler: (args: { title: string; content?: string; category?: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
-    sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
+    
+    const config = createTestConfig();
+    testClient = createJottyClient(config);
+    
     const serverMock = {
       tool: (_name: string, _description: string, _schema: unknown, handler: typeof createNoteHandler) => {
         createNoteHandler = handler;
       },
     } as McpServer;
-    createNoteModule.register(serverMock);
+    createNoteModule.register(serverMock, { jottyClient: testClient });
   });
 
   afterEach(() => {
@@ -29,9 +33,15 @@ describe("create_note Tool Unit Tests", () => {
   it("should successfully create a note with title and content", async () => {
     const title = "My Test Note";
     const content = "This is some test content.";
-    const expectedNote: JottyNote = { id: 'mock-note-1', title, content, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    const expectedNote: JottyNote = { 
+      id: 'mock-note-1', 
+      title, 
+      content, 
+      createdAt: new Date().toISOString(), 
+      updatedAt: new Date().toISOString() 
+    };
 
-    const createNoteStub = sandbox.stub(jottyClient, "createNote").resolves(expectedNote);
+    const createNoteStub = sandbox.stub(testClient, "createNote").resolves(expectedNote);
 
     const response = await createNoteHandler({ title, content });
 
@@ -42,9 +52,15 @@ describe("create_note Tool Unit Tests", () => {
 
   it("should successfully create a note with only title", async () => {
     const title = "Title Only Note";
-    const expectedNote: JottyNote = { id: 'mock-note-2', title, content: '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    const expectedNote: JottyNote = { 
+      id: 'mock-note-2', 
+      title, 
+      content: '', 
+      createdAt: new Date().toISOString(), 
+      updatedAt: new Date().toISOString() 
+    };
 
-    const createNoteStub = sandbox.stub(jottyClient, "createNote").resolves(expectedNote);
+    const createNoteStub = sandbox.stub(testClient, "createNote").resolves(expectedNote);
 
     const response = await createNoteHandler({ title });
 
@@ -55,7 +71,7 @@ describe("create_note Tool Unit Tests", () => {
 
   it("should handle errors from jottyClient.createNote", async () => {
     const errorMessage = "Failed to create note in Jotty API";
-    sandbox.stub(jottyClient, "createNote").rejects(new Error(errorMessage));
+    sandbox.stub(testClient, "createNote").rejects(new Error(errorMessage));
 
     await assert.rejects(
       createNoteHandler({ title: 'Error Note' }),
@@ -66,18 +82,21 @@ describe("create_note Tool Unit Tests", () => {
 
 describe("get_all_notes Tool Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
+  let testClient: ReturnType<typeof createJottyClient>;
   let getAllNotesHandler: () => Promise<{ content: Array<{ type: string; text: string }> }>;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
-    sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
+    
+    const config = createTestConfig();
+    testClient = createJottyClient(config);
+    
     const serverMock = {
       tool: (_name: string, _description: string, _schema: unknown, handler: typeof getAllNotesHandler) => {
         getAllNotesHandler = handler;
       },
     } as McpServer;
-    getAllNotesModule.register(serverMock);
+    getAllNotesModule.register(serverMock, { jottyClient: testClient });
   });
 
   afterEach(() => {
@@ -89,7 +108,7 @@ describe("get_all_notes Tool Unit Tests", () => {
       { id: 'note-a', title: 'Note A', content: 'Content A', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
       { id: 'note-b', title: 'Note B', content: 'Content B', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     ];
-    sandbox.stub(jottyClient, "getAllNotes").resolves(expectedNotes);
+    sandbox.stub(testClient, "getAllNotes").resolves(expectedNotes);
 
     const response = await getAllNotesHandler();
 
@@ -99,13 +118,13 @@ describe("get_all_notes Tool Unit Tests", () => {
 
   it("should handle errors from jottyClient.getAllNotes", async () => {
     const errorMessage = "Failed to fetch notes from Jotty API";
-    sandbox.stub(jottyClient, "getAllNotes").rejects(new Error(errorMessage));
+    sandbox.stub(testClient, "getAllNotes").rejects(new Error(errorMessage));
 
     await assert.rejects(getAllNotesHandler(), new Error(errorMessage));
   });
 
   it("should return empty array if no notes are found", async () => {
-    sandbox.stub(jottyClient, "getAllNotes").resolves([]);
+    sandbox.stub(testClient, "getAllNotes").resolves([]);
 
     const response = await getAllNotesHandler();
 

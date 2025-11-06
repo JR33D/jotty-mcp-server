@@ -8,12 +8,15 @@ export const registerableModuleSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   register: z.function()
-    .args(z.any())
+    .args(z.any(), z.any().optional())
     .returns(z.union([z.void(), z.promise(z.void())]))
 });
 
-export type RegisterableModule = z.infer<typeof registerableModuleSchema> & {
-  register: (server: McpServer) => void | Promise<void>;
+export type RegisterableModule<TDeps = unknown> = {
+  type: z.infer<typeof moduleTypeSchema>;
+  name: string;
+  description?: string;
+  register: (server: McpServer, deps?: TDeps) => void | Promise<void>;
 };
 
 export function isRegisterableModule(module: unknown): module is RegisterableModule {

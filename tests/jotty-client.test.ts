@@ -1,7 +1,8 @@
 import assert from 'node:assert';
 import { test } from 'node:test';
 import sinon from 'sinon';
-import { JottyClient } from '../src/lib/jotty-client.js';
+import { createTestConfig } from './helpers/test-config.js';
+import { createJottyClient } from '../src/lib/jotty-client.js';
 
 const mockChecklistsResponse = (): Promise<Response> => Promise.resolve(new Response(JSON.stringify([{ id: '1', title: 'Test Checklist', items: [] }]), { status: 200, headers: { 'Content-Type': 'application/json' } }));
 const mockAddChecklistItemResponse = (): Promise<Response> => Promise.resolve(new Response(JSON.stringify({ text: 'New Item', status: 'todo' }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
@@ -84,8 +85,6 @@ function checkExportsEndpointsCalled(url: string | URL | Request, options?: Requ
 
 test.beforeEach(() => {
   sandbox = sinon.createSandbox();
-  sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
-  sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
   _fetchStub = sandbox.stub(global, 'fetch').callsFake((url: string | URL | Request, options?: RequestInit) => {
     let response: Promise<Response> | undefined;
     response = checkChecklistsEndpointsCalled(url, options);
@@ -103,7 +102,8 @@ test.afterEach(() => {
   sandbox.restore();
 });
 
-const client = new JottyClient();
+const config = createTestConfig();
+const client = createJottyClient(config);
 
 test('JottyClient - getAllChecklists', async () => {
   const checklists = await client.getAllChecklists();
