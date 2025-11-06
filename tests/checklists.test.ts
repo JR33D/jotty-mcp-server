@@ -1,7 +1,8 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
-import { jottyClient, type Checklist, type ChecklistItem } from "../src/lib/jotty-client.js";
+import { createTestConfig } from "./helpers/test-config.js";
+import { createJottyClient, type Checklist, type ChecklistItem } from "../src/lib/jotty-client.js";
 import addChecklistItemModule from "../src/tools/checklists/add-checklist-item.js";
 import checkItemModule from "../src/tools/checklists/check-item.js";
 import getAllChecklistsModule from "../src/tools/checklists/get-all-checklists.js";
@@ -10,11 +11,12 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 describe("Checklist Tool Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
+  let testClient: ReturnType<typeof createJottyClient>;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
-    sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
+    const config = createTestConfig();
+    testClient = createJottyClient(config);
   });
 
   afterEach(() => {
@@ -25,13 +27,17 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: (args: { listId: string; text: string; status?: 'todo' | 'done' | 'in_progress' | 'paused'; time?: number }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
-      addChecklistItemModule.register(serverMock);
+      const serverMock = { 
+        tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { 
+          handler = h; 
+        } 
+      } as McpServer;
+      addChecklistItemModule.register(serverMock, { jottyClient: testClient });
     });
 
     it("should add an item to a checklist", async () => {
       const newItem: ChecklistItem = { text: "New Item", status: "todo" };
-      sandbox.stub(jottyClient, "addChecklistItem").resolves(newItem);
+      sandbox.stub(testClient, "addChecklistItem").resolves(newItem);
       const response = await handler({ listId: "list-1", text: "New Item" });
       assert(response.content[0] != null);
       assert.deepStrictEqual(JSON.parse(response.content[0].text), newItem);
@@ -42,13 +48,17 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: (args: { listId: string; itemIndex: number }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
-      checkItemModule.register(serverMock);
+      const serverMock = { 
+        tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { 
+          handler = h; 
+        } 
+      } as McpServer;
+      checkItemModule.register(serverMock, { jottyClient: testClient });
     });
 
     it("should check an item in a checklist", async () => {
       const checkedItem: ChecklistItem = { text: "Checked Item", status: "done" };
-      sandbox.stub(jottyClient, "checkItem").resolves(checkedItem);
+      sandbox.stub(testClient, "checkItem").resolves(checkedItem);
       const response = await handler({ listId: "list-1", itemIndex: 0 });
       assert(response.content[0] != null);
       assert.deepStrictEqual(JSON.parse(response.content[0].text), checkedItem);
@@ -59,13 +69,19 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: () => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
-      getAllChecklistsModule.register(serverMock);
+      const serverMock = { 
+        tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { 
+          handler = h; 
+        } 
+      } as McpServer;
+      getAllChecklistsModule.register(serverMock, { jottyClient: testClient });
     });
 
     it("should get all checklists", async () => {
-      const checklists: Array<Checklist> = [{ id: "list-1", title: "My Checklist", items: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }];
-      sandbox.stub(jottyClient, "getAllChecklists").resolves(checklists);
+      const checklists: Array<Checklist> = [
+        { id: "list-1", title: "My Checklist", items: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+      ];
+      sandbox.stub(testClient, "getAllChecklists").resolves(checklists);
       const response = await handler();
       assert(response.content[0] != null);
       assert.deepStrictEqual(JSON.parse(response.content[0].text), checklists);
@@ -76,13 +92,17 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: (args: { listId: string; itemIndex: number }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
-      uncheckItemModule.register(serverMock);
+      const serverMock = { 
+        tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { 
+          handler = h; 
+        } 
+      } as McpServer;
+      uncheckItemModule.register(serverMock, { jottyClient: testClient });
     });
 
     it("should uncheck an item in a checklist", async () => {
       const uncheckedItem: ChecklistItem = { text: "Unchecked Item", status: "todo" };
-      sandbox.stub(jottyClient, "uncheckItem").resolves(uncheckedItem);
+      sandbox.stub(testClient, "uncheckItem").resolves(uncheckedItem);
       const response = await handler({ listId: "list-1", itemIndex: 0 });
       assert(response.content[0] != null);
       assert.deepStrictEqual(JSON.parse(response.content[0].text), uncheckedItem);

@@ -1,4 +1,4 @@
-import { env } from "../config.js";
+import { getConfig } from "../config.js";
 import { logger } from "../logger.js";
 import type { NextFunction, Request, Response } from "express";
 
@@ -11,7 +11,8 @@ export function apiKeyAuth(req: Request, res: Response, next: NextFunction): voi
     return;
   }
 
-  const apiKey = env.API_KEY;
+  const config = getConfig();
+  const apiKey = config.API_KEY;
 
   const authHeader = req.headers[API_KEY_HEADER];
 

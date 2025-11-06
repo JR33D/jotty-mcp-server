@@ -1,13 +1,25 @@
 import { z } from 'zod';
-import { jottyClient } from '../../lib/jotty-client.js';
+import type { JottyClient } from '../../lib/jotty-client.js';
 import type { RegisterableModule } from '../../registry/types.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const getSummaryModule: RegisterableModule = {
+export type GetSummaryModuleDeps = {
+  jottyClient: JottyClient;
+};
+
+const getSummaryModule: RegisterableModule<GetSummaryModuleDeps> = {
   type: 'tool',
   name: 'AccountSummaryFetcher',
   description: 'Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.',
-  register: (server: McpServer) => {
+  register: (server: McpServer, deps?: GetSummaryModuleDeps) => {
+    const getClient = async (): Promise<JottyClient> => {
+      if (deps?.jottyClient !== undefined) {
+        return deps.jottyClient;
+      }
+      const { getJottyClient } = await import('../../lib/jotty-client.js');
+      return await getJottyClient();
+    };
+
     server.tool(
       'AccountSummaryFetcher',
       'Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.',
@@ -16,11 +28,8 @@ const getSummaryModule: RegisterableModule = {
       },
       async (args) => {
         const { username: _username } = args;
-        /*
-         * The jottyClient.getSummary() method does not currently accept a username parameter.
-         * If the API supports it in the future, this handler should be updated.
-         */
-        const summary = await jottyClient.getSummary();
+        const client = await getClient();
+        const summary = await client.getSummary();
         return {
           content: [
             {
