@@ -18,7 +18,6 @@ updates:
     open-pull-requests-limit: 10
     # Add reviewers
     reviewers:
-      - "jreed"
       - "jr33d"
     # Add labels to pull requests
     labels:
