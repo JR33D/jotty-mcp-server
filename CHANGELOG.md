@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.0.0 (2025-11-06)
+
+
+### Features
+
+* **auth:** Implement API key authentication middleware ([afb3cad](https://github.com/JR33D/jotty-mcp-server/commit/afb3cad2f884abe21ec0d8feca9c2431b2c94688))
+* initial 1.0 release of Jotty MCP Server ([54f8ec9](https://github.com/JR33D/jotty-mcp-server/commit/54f8ec9583ad0c7d1832fa8e9585e287797467b5))
+* **logging:** integrate Winston for structured console logging ([61af4d4](https://github.com/JR33D/jotty-mcp-server/commit/61af4d4c87ca542277179312633e070e26ca7a20))
+* Prepare for prompt functionality and refactor codebase ([5ce3387](https://github.com/JR33D/jotty-mcp-server/commit/5ce3387cfdbdb2268f6823b024045ad8fdb89716))
+* **project-setup:** Initial commit of Jotty MCP Server with core features and setup ([39d7738](https://github.com/JR33D/jotty-mcp-server/commit/39d7738a3599eeef43544908d93c42c11c91fdd3))
+* **server:** Add health endpoint ([90fc12e](https://github.com/JR33D/jotty-mcp-server/commit/90fc12e7e37377193a1a0221851005d3a4bdb367))
+* **tests:** Mock environment variables for unit tests ([7286108](https://github.com/JR33D/jotty-mcp-server/commit/72861084f48be14d8df7c406803bc097e0d4375c))
+* Update build and test configurations for compiled JS ([ffb634a](https://github.com/JR33D/jotty-mcp-server/commit/ffb634a57c2037fa17f10fd9d21e7e1bac6af106))
+
+
+### Bug Fixes
+
+* **ci:** Disable GHA cache for Docker build ([79e6d33](https://github.com/JR33D/jotty-mcp-server/commit/79e6d3394c19917e67dc57ddd4c0f2ab6d6b6d1b))
+* **ci:** Provide environment variables for test execution ([741c10a](https://github.com/JR33D/jotty-mcp-server/commit/741c10a719473209c0f07e4f61ce1eb16d26ede2))
+* **imports:** update import statements for default exports ([f48b028](https://github.com/JR33D/jotty-mcp-server/commit/f48b028ef10693a0793651c639a6664d31e1893a))
+* **lint:** Resolve remaining linting issues ([ab56f19](https://github.com/JR33D/jotty-mcp-server/commit/ab56f19527ad03fcd5fc3ddb2cb842b05b55e4af))
+* **modules, dev:** Resolve module loading and dev server startup issues ([e92f9e3](https://github.com/JR33D/jotty-mcp-server/commit/e92f9e3ec0f4016c1cbda71766cf097e8b64ad74))
+* **server:** prevent body parser from breaking SSE by using raw middleware on /mcp ([f614ef7](https://github.com/JR33D/jotty-mcp-server/commit/f614ef7679b278d1c9d056caabaa363b51b28a92))
+
 ## [1.0.0] - 2025-11-05
 
 ### Added
