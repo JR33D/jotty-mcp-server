@@ -158,7 +158,3 @@ export async function getJottyClient(): Promise<JottyClient> {
   }
   return defaultClient;
 }
-
-export function resetJottyClient(): void {
-  defaultClient = undefined;
-}

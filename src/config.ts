@@ -21,7 +21,3 @@ export function getConfig(): Config {
   cachedConfig ??= loadConfig();
   return cachedConfig;
 }
-
-export function resetConfig(): void {
-  cachedConfig = undefined;
-}
