@@ -17,16 +17,16 @@ Requests without a valid API key will be rejected with a `401 Unauthorized` stat
 
 ## Checklist Tools
 
-### `get_all_checklists`
+### `AllChecklistsFetcher`
 
--   **Description:** Retrieves all checklists for the authenticated user.
+-   **Description:** Retrieves all checklists associated with the authenticated user from the Jotty API. This tool provides agents with access to the user's complete list of checklists within the MCP system.
 -   **Schema:** `z.object({})` (No input parameters)
 -   **Handler:** Calls `jottyClient.getAllChecklists()`.
 -   **Returns:** A JSON array of `Checklist` objects.
 
-### `add_checklist_item`
+### `ChecklistItemAdder`
 
--   **Description:** Adds a new item to a specified checklist.
+-   **Description:** Adds a new item to a specified checklist via the Jotty API. This tool allows agents to extend existing checklists with new tasks or entries within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({
@@ -39,9 +39,9 @@ z.object({
 -   **Handler:** Calls `jottyClient.addChecklistItem(listId, { text, status, time })`.
 -   **Returns:** A JSON `ChecklistItem` object.
 
-### `check_item`
+### `ChecklistItemChecker`
 
--   **Description:** Marks an item in a checklist as complete.
+-   **Description:** Marks an item in a checklist as complete via the Jotty API. This tool allows agents to update the status of checklist items within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({
@@ -52,9 +52,9 @@ z.object({
 -   **Handler:** Calls `jottyClient.checkItem(listId, itemIndex)`.
 -   **Returns:** A JSON `ChecklistItem` object.
 
-### `uncheck_item`
+### `ChecklistItemUnchecker`
 
--   **Description:** Marks an item in a checklist as incomplete.
+-   **Description:** Marks an item in a checklist as incomplete via the Jotty API. This tool enables agents to manage the status of checklist items within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({
@@ -69,16 +69,16 @@ z.object({
 
 ## Note Tools
 
-### `get_all_notes`
+### `AllNotesFetcher`
 
--   **Description:** Retrieves all notes for the authenticated user.
+-   **Description:** Retrieves all notes associated with the authenticated user from the Jotty API. This tool facilitates access to user-specific note data within the MCP system.
 -   **Schema:** `z.object({})` (No input parameters)
 -   **Handler:** Calls `jottyClient.getAllNotes()`.
 -   **Returns:** A JSON array of `Note` objects.
 
-### `create_note`
+### `NoteCreator`
 
--   **Description:** Creates a new note.
+-   **Description:** Facilitates the creation of new notes for the authenticated user via the Jotty API. This tool allows agents to add new textual information to the user's collection within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({
@@ -94,9 +94,9 @@ z.object({
 
 ## Admin Tools
 
-### `get_user_info`
+### `UserInfoFetcher`
 
--   **Description:** Get information about a specific Jotty user.
+-   **Description:** Retrieves detailed information for a specified Jotty user. This administrative tool provides insights into user profiles within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({
@@ -106,16 +106,16 @@ z.object({
 -   **Handler:** Calls `jottyClient.getUserInfo(username)`.
 -   **Returns:** A JSON `UserInfo` object.
 
-### `get_categories`
+### `CategoryFetcher`
 
--   **Description:** Retrieves all available categories for organizing items.
+-   **Description:** Retrieves all available categories from the Jotty API. This administrative tool provides a comprehensive list of categorization options within the MCP system.
 -   **Schema:** `z.object({})` (No input parameters)
 -   **Handler:** Calls `jottyClient.getCategories()`.
 -   **Returns:** A JSON array of `Category` objects.
 
-### `get_summary`
+### `AccountSummaryFetcher`
 
--   **Description:** Get summary statistics from your Jotty account.
+-   **Description:** Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({
@@ -125,9 +125,9 @@ z.object({
 -   **Handler:** Calls `jottyClient.getSummary()`.
 -   **Returns:** A JSON `SummaryStats` object.
 
-### `export_data`
+### `DataExporter`
 
--   **Description:** Starts a full export of your Jotty data.
+-   **Description:** Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({
@@ -138,9 +138,9 @@ z.object({
 -   **Handler:** Calls `jottyClient.exportData(type, username)`.
 -   **Returns:** A JSON object with an `exportId`.
 
-### `get_export_progress`
+### `ExportProgressMonitor`
 
--   **Description:** Checks the progress of an ongoing data export.
+-   **Description:** Monitors the progress of a specified data export operation. This administrative tool provides real-time status updates for data export tasks within the MCP system.
 -   **Schema:**
     ```typescript
 z.object({

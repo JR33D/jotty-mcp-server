@@ -2,12 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.0] - 2025-11-02
+## [1.0.0] - 2025-11-05
 
 ### Added
 
 -   Initial release of the Jotty MCP Server.
--   Integration with Alexander's `mcp-server-starter-ts` template.
+-   Started with [Alexander's](https://github.com/alexanderop/mcp-server-starter-ts/tree/main) `mcp-server-starter-ts` template.
 -   **11 MCP Tools for Jotty API interaction:**
     -   `get_all_checklists`
     -   `add_checklist_item`
@@ -24,8 +24,7 @@ All notable changes to this project will be documented in this file.
 -   Environment variable configuration and validation (`.env`, `.env.example`, `src/config.ts`).
 -   Dual transport support (stdio and HTTP) via `src/server/boot.ts`.
 -   Comprehensive testing setup:
-    -   Unit tests for `jotty-client`.
-    -   Integration tests for all MCP tools.
+    -   Unit tests for `jotty-client` and all MCP tools.
 -   Docker configuration for production and development environments (`Dockerfile`, `docker-compose.yml`).
 -   Extensive documentation:
     -   `README.md`

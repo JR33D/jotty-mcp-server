@@ -2,24 +2,29 @@ import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { RegisterableModule } from "../registry/types.js";
 import type { McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 
-type TimestampFormat = "iso" | "unix" | "readable";
+type TimestampFormat = "iso" | "unix" | "readable" | "friendly";
+
+type TimestampVariables = {
+  format?: TimestampFormat;
+};
 
 const MIME_TYPE_PLAIN = "text/plain";
-const VALID_FORMATS: Array<TimestampFormat> = ["iso", "unix", "readable"];
+const VALID_FORMATS: Array<TimestampFormat> = ["iso", "unix", "readable", "friendly"];
 
 const timestampModule: RegisterableModule = {
   type: "resource",
-  name: "timestamp",
-  description: "Get current timestamp in various formats",
+  name: "TimestampGenerator",
+  description: "Generates the current timestamp in various formats (ISO, Unix, readable). This utility provides time-related information to agents within the MCP system.",
   register(server: McpServer) {
     server.registerResource(
-      "timestamp",
-      new ResourceTemplate("timestamp://{format}", {
+      "TimestampGenerator",
+      new ResourceTemplate("TimestampGenerator://{format}", {
         list: () => ({
           resources: [
-            { uri: "timestamp://iso", name: "ISO 8601 format" },
-            { uri: "timestamp://unix", name: "Unix timestamp" },
-            { uri: "timestamp://readable", name: "Human-readable format" },
+            { uri: "TimestampGenerator://iso", name: "ISO 8601 format" },
+            { uri: "TimestampGenerator://unix", name: "Unix timestamp" },
+            { uri: "TimestampGenerator://readable", name: "Human-readable format" },
+            { uri: "TimestampGenerator://friendly", name: "YYYY-MM-DD format" },
           ],
         }),
         complete: {
@@ -33,9 +38,10 @@ const timestampModule: RegisterableModule = {
       }),
       {
         name: "Timestamp",
-        description: "Get current timestamp in various formats",
+        description: "Generates the current timestamp in various formats (ISO, Unix, readable). This utility provides time-related information to agents within the MCP system.",
       },
-      (uri, { format }) => {
+      (uri, variables: TimestampVariables) => {
+        const { format } = variables;
         const now = new Date();
         let timestamp: string;
 
@@ -45,27 +51,25 @@ const timestampModule: RegisterableModule = {
               {
                 uri: uri.href,
                 mimeType: MIME_TYPE_PLAIN,
-                text: "Format not specified. Use 'iso', 'unix', or 'readable'",
+                text: "Format not specified. Use 'iso', 'unix', 'readable', or 'friendly'",
               },
             ],
           };
         }
 
-        if (!VALID_FORMATS.includes(format as TimestampFormat)) {
+        if (!VALID_FORMATS.includes(format)) {
           return {
             contents: [
               {
                 uri: uri.href,
                 mimeType: MIME_TYPE_PLAIN,
-                text: `Unknown format: ${String(format)}. Use 'iso', 'unix', or 'readable'`,
+                text: `Unknown format: ${format}. Use 'iso', 'unix', 'readable', or 'friendly'`,
               },
             ],
           };
         }
-
-        const validFormat = format as TimestampFormat;
         
-        switch (validFormat) {
+        switch (format) {
           case "iso":
             timestamp = now.toISOString();
             break;
@@ -75,8 +79,15 @@ const timestampModule: RegisterableModule = {
           case "readable":
             timestamp = now.toLocaleString();
             break;
+          case "friendly": {
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            timestamp = `${year.toString()}-${month}-${day}`;
+            break;
+          }
           default: {
-            const exhaustiveCheck: never = validFormat;
+            const exhaustiveCheck: never = format;
             return exhaustiveCheck;
           }
         }

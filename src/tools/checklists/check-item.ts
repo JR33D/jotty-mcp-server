@@ -5,12 +5,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const checkItemModule: RegisterableModule = {
   type: 'tool',
-  name: 'check_item',
-  description: 'Mark an item in a checklist as complete',
+  name: 'ChecklistItemChecker',
+  description: 'Marks a specified item within a checklist as complete via the Jotty API. This tool allows agents to update the status of checklist items within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'check_item',
-      'Mark an item in a checklist as complete',
+      'ChecklistItemChecker',
+      'Marks a specified item within a checklist as complete via the Jotty API. This tool allows agents to update the status of checklist items within the MCP system.',
       {
         listId: z.string(),
         itemIndex: z.number(),

@@ -23,15 +23,15 @@ export const systemInfoHandler = (osModule: typeof os = os): { contents: [{ uri:
 
 const systemInfoModule: RegisterableModule = {
   type: "resource",
-  name: "system-info",
-  description: "Get basic system information about the server",
+  name: "SystemMonitor",
+  description: "Provides basic system information about the server, including platform, architecture, Node.js version, uptime, and memory usage. This resource offers insights into the operational environment of the MCP system",
   register(server: McpServer) {
     server.resource(
-      "system-info",
-      "system://info",
+      "SystemMonitor",
+      "system://SystemMonitor",
       {
         name: "System Information",
-        description: "Get basic system information about the server",
+        description: "Provides basic system information about the server, including platform, architecture, Node.js version, uptime, and memory usage. This resource offers insights into the operational environment of the MCP system.",
       },
       () => systemInfoHandler()
     );

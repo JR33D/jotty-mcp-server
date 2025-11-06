@@ -4,12 +4,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const getAllNotesModule: RegisterableModule = {
   type: 'tool',
-  name: 'get_all_notes',
-  description: 'Get all notes for the authenticated user',
+  name: 'AllNotesFetcher',
+  description: 'Retrieves all notes associated with the authenticated user from the Jotty API. This tool facilitates access to user-specific note data within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'get_all_notes',
-      'Get all notes for the authenticated user',
+      'AllNotesFetcher',
+      'Retrieves all notes associated with the authenticated user from the Jotty API. This tool facilitates access to user-specific note data within the MCP system.',
       {},
       async () => {
         const notes = await jottyClient.getAllNotes();

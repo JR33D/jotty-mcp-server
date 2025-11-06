@@ -25,17 +25,7 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: (args: { listId: string; text: string; status?: 'todo' | 'done' | 'in_progress' | 'paused'; time?: number }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: unknown, h: (args: {
-    listId: string;
-    text: string;
-    status?: "todo" | "done" | "in_progress" | "paused" | undefined;
-    time?: number | undefined;
-}) => Promise<{
-    content: Array<{
-        type: string;
-        text: string;
-    }>;
-}>) => { if (name === 'add_checklist_item') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
       addChecklistItemModule.register(serverMock);
     });
 
@@ -52,15 +42,7 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: (args: { listId: string; itemIndex: number }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: unknown, h: (args: {
-    listId: string;
-    itemIndex: number;
-}) => Promise<{
-    content: Array<{
-        type: string;
-        text: string;
-    }>;
-}>) => { if (name === 'check_item') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
       checkItemModule.register(serverMock);
     });
 
@@ -77,12 +59,7 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: () => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: unknown, h: () => Promise<{
-    content: Array<{
-        type: string;
-        text: string;
-    }>;
-}>) => { if (name === 'get_all_checklists') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
       getAllChecklistsModule.register(serverMock);
     });
 
@@ -99,15 +76,7 @@ describe("Checklist Tool Unit Tests", () => {
     let handler: (args: { listId: string; itemIndex: number }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: unknown, h: (args: {
-    listId: string;
-    itemIndex: number;
-}) => Promise<{
-    content: Array<{
-        type: string;
-        text: string;
-    }>;
-}>) => { if (name === 'uncheck_item') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: unknown, h: typeof handler) => { handler = h; } } as McpServer;
       uncheckItemModule.register(serverMock);
     });
 

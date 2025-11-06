@@ -4,12 +4,12 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const echoModule: RegisterableModule = {
   type: "tool",
-  name: "echo",
-  description: "Echo back the provided text",
+  name: "EchoTool",
+  description: "A utility tool that echoes back the provided text. It serves as a basic communication verification tool within the MCP system.",
   register(server: McpServer) {
     server.tool(
-      "echo",
-      "Echo back the provided text",
+      "EchoTool",
+      "A utility tool that echoes back the provided text. It serves as a basic communication verification tool within the MCP system.",
       {
         text: z.string().min(1, "Text cannot be empty").describe("Text to echo back"),
       },

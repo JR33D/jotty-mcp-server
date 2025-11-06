@@ -26,7 +26,7 @@ describe("Admin Tool Unit Tests", () => {
     let handler: (args: { type: 'json' | 'csv', username?: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: object, h: typeof handler) => { if (name === 'export_data') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { handler = h; } } as McpServer;
       exportDataModule.register(serverMock);
     });
 
@@ -46,7 +46,7 @@ describe("Admin Tool Unit Tests", () => {
     let handler: () => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: object, h: typeof handler) => { if (name === 'get_categories') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { handler = h; } } as McpServer;
       getCategoriesModule.register(serverMock);
     });
 
@@ -67,7 +67,7 @@ describe("Admin Tool Unit Tests", () => {
     let handler: (args: { exportId: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: object, h: typeof handler) => { if (name === 'get_export_progress') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { handler = h; } } as McpServer;
       getExportProgressModule.register(serverMock);
     });
 
@@ -87,7 +87,7 @@ describe("Admin Tool Unit Tests", () => {
     let handler: (args: { username?: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: object, h: typeof handler) => { if (name === 'get_summary') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { handler = h; } } as McpServer;
       getSummaryModule.register(serverMock);
     });
 
@@ -108,7 +108,7 @@ describe("Admin Tool Unit Tests", () => {
     let handler: (args: { username: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
 
     beforeEach(() => {
-      const serverMock = { tool: (name: string, _desc: string, _schema: object, h: typeof handler) => { if (name === 'get_user_info') handler = h; } } as McpServer;
+      const serverMock = { tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { handler = h; } } as McpServer;
       getUserInfoModule.register(serverMock);
     });
 

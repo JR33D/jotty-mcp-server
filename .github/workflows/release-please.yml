@@ -1,0 +1,153 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+          package-name: jotty-mcp-server
+          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"perf","section":"Performance Improvements","hidden":false},{"type":"docs","section":"Documentation","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false},{"type":"refactor","section":"Code Refactoring","hidden":false},{"type":"test","section":"Tests","hidden":false},{"type":"build","section":"Build System","hidden":false},{"type":"ci","section":"Continuous Integration","hidden":false}]'
+
+  build-and-publish:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log into GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern=v{{version}},value=${{ needs.release-please.outputs.version }}
+            type=semver,pattern=v{{major}}.{{minor}},value=${{ needs.release-please.outputs.version }}
+            type=semver,pattern=v{{major}},value=${{ needs.release-please.outputs.version }},enable=${{ !startsWith(needs.release-please.outputs.version, '0.') }}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=stable
+            type=raw,value=${{ needs.release-please.outputs.version }}-${{ steps.date.outputs.date }}
+          labels: |
+            org.opencontainers.image.title=Jotty MCP Server
+            org.opencontainers.image.description=Jotty MCP Server backend application
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            org.opencontainers.image.version=${{ needs.release-please.outputs.version }}
+            org.opencontainers.image.created=${{ steps.date.outputs.date }}
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VERSION=${{ needs.release-please.outputs.version }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ghcr.io/${{ github.repository }}
+          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+          push-to-registry: true
+
+      - name: Update release with deployment info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ needs.release-please.outputs.version }}';
+            const tagName = '${{ needs.release-please.outputs.tag_name }}';
+
+            // Get the release
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: tagName
+            });
+
+            // Add Docker deployment info to release body
+            const dockerInfo = `
+
+            ## 🐳 Docker Images
+
+            This release is available as Docker images for multiple architectures:
+
+            ### Pull the image
+            `bash`
+            # Latest version
+            docker pull ghcr.io/${{ github.repository }}:latest
+
+            # Specific version
+            docker pull ghcr.io/${{ github.repository }}:${version}
+            docker pull ghcr.io/${{ github.repository }}:v${version}
+            `
+
+            ### Supported Architectures
+            - linux/amd64
+            - linux/arm64
+
+            ### Quick Start
+            `bash`
+            docker run -d \
+              -p 3000:3000 \
+              -e JOTTY_BASE_URL=http://localhost:1122 \
+              -e JOTTY_API_KEY=your-jotty-api-key \
+              -e API_KEY=your-api-key \
+              ghcr.io/${{ github.repository }}:${version}
+            `
+
+            See [docker-compose.yml](https://github.com/${{ github.repository }}/blob/${tagName}/docker-compose.yml) for full configuration example.
+            `;
+
+            // Update release body
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.id,
+              body: release.body + dockerInfo
+            });

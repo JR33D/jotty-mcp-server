@@ -5,12 +5,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const addChecklistItemModule: RegisterableModule = {
   type: 'tool',
-  name: 'add_checklist_item',
-  description: 'Add an item to a checklist',
+  name: 'ChecklistItemAdder',
+  description: 'Adds a new item to a specified checklist via the Jotty API. This tool allows agents to extend existing checklists with new tasks or entries within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'add_checklist_item',
-      'Add an item to a checklist',
+      'ChecklistItemAdder',
+      'Adds a new item to a specified checklist via the Jotty API. This tool allows agents to extend existing checklists with new tasks or entries within the MCP system.',
       {
         listId: z.string(),
         text: z.string(),

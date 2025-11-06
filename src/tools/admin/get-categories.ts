@@ -4,12 +4,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const getCategoriesModule: RegisterableModule = {
   type: 'tool',
-  name: 'get_categories',
-  description: 'Get all available categories',
+  name: 'CategoryFetcher',
+  description: 'Retrieves all available categories from the Jotty API. This administrative tool provides a comprehensive list of categorization options within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'get_categories',
-      'Get all available categories',
+      'CategoryFetcher',
+      'Retrieves all available categories from the Jotty API. This administrative tool provides a comprehensive list of categorization options within the MCP system.',
       {},
       async () => {
         const categories = await jottyClient.getCategories();

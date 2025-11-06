@@ -5,12 +5,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const uncheckItemModule: RegisterableModule = {
   type: 'tool',
-  name: 'uncheck_item',
-  description: 'Mark an item in a checklist as incomplete',
+  name: 'ChecklistItemUnchecker',
+  description: 'Marks a specified item within a checklist as incomplete via the Jotty API. This tool enables agents to manage the status of checklist items within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'uncheck_item',
-      'Mark an item in a checklist as incomplete',
+      'ChecklistItemUnchecker',
+      'Marks a specified item within a checklist as incomplete via the Jotty API. This tool enables agents to manage the status of checklist items within the MCP system.',
       {
         listId: z.string(),
         itemIndex: z.number(),

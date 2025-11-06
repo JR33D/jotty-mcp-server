@@ -15,18 +15,8 @@ describe("create_note Tool Unit Tests", () => {
     sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
     sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
     const serverMock = {
-      tool: (name: string, _description: string, _schema: unknown, handler: (args: {
-    title: string;
-    content?: string | undefined;
-}) => Promise<{
-    content: Array<{
-        type: string;
-        text: string;
-    }>;
-}>) => {
-        if (name === 'create_note') {
-          createNoteHandler = handler;
-        }
+      tool: (_name: string, _description: string, _schema: unknown, handler: typeof createNoteHandler) => {
+        createNoteHandler = handler;
       },
     } as McpServer;
     createNoteModule.register(serverMock);
@@ -83,15 +73,8 @@ describe("get_all_notes Tool Unit Tests", () => {
     sandbox.stub(process.env, 'JOTTY_BASE_URL').value('http://localhost:1122');
     sandbox.stub(process.env, 'JOTTY_API_KEY').value('ck_xxxxx');
     const serverMock = {
-      tool: (name: string, _description: string, _schema: unknown, handler: () => Promise<{
-    content: Array<{
-        type: string;
-        text: string;
-    }>;
-}>) => {
-        if (name === 'get_all_notes') {
-          getAllNotesHandler = handler;
-        }
+      tool: (_name: string, _description: string, _schema: unknown, handler: typeof getAllNotesHandler) => {
+        getAllNotesHandler = handler;
       },
     } as McpServer;
     getAllNotesModule.register(serverMock);

@@ -5,12 +5,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const getSummaryModule: RegisterableModule = {
   type: 'tool',
-  name: 'get_summary',
-  description: 'Get summary statistics from your Jotty account',
+  name: 'AccountSummaryFetcher',
+  description: 'Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'get_summary',
-      'Get summary statistics from your Jotty account',
+      'AccountSummaryFetcher',
+      'Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.',
       {
         username: z.string().optional(),
       },

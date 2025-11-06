@@ -5,12 +5,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const exportDataModule: RegisterableModule = {
   type: 'tool',
-  name: 'export_data',
-  description: 'Starts a full export of your Jotty data',
+  name: 'DataExporter',
+  description: 'Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'export_data',
-      'Starts a full export of your Jotty data',
+      'DataExporter',
+      'Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.',
       {
         type: z.enum(['json', 'csv']),
         username: z.string().optional(),

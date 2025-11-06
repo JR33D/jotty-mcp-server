@@ -12,19 +12,19 @@ This project is built using Alexander's [mcp-server-starter-ts](https://github.c
 This server exposes 11 tools to interact with your Jotty data:
 
 - **Checklists:**
-  - `get_all_checklists`: Retrieve all checklists for the authenticated user.
-  - `add_checklist_item`: Add an item to a specified checklist.
-  - `check_item`: Mark an item in a checklist as complete.
-  - `uncheck_item`: Mark an item in a checklist as incomplete.
+  - `AllChecklistsFetcher`: Retrieves all checklists associated with the authenticated user from the Jotty API. This tool provides agents with access to the user's complete list of checklists within the MCP system.
+  - `ChecklistItemAdder`: Adds a new item to a specified checklist via the Jotty API. This tool allows agents to extend existing checklists with new tasks or entries within the MCP system.
+  - `ChecklistItemChecker`: Marks a specified item within a checklist as complete via the Jotty API. This tool allows agents to update the status of checklist items within the MCP system.
+  - `ChecklistItemUnchecker`: Marks a specified item within a checklist as incomplete via the Jotty API. This tool enables agents to manage the status of checklist items within the MCP system.
 - **Notes:**
-  - `get_all_notes`: Retrieve all notes for the authenticated user.
-  - `create_note`: Create a new note with a title, optional content, and category.
+  - `AllNotesFetcher`: Retrieves all notes associated with the authenticated user from the Jotty API. This tool facilitates access to user-specific note data within the MCP system.
+  - `NoteCreator`: Facilitates the creation of new notes for the authenticated user via the Jotty API. This tool allows agents to add new textual information to the user's collection within the MCP system.
 - **Admin & Data Management:**
-  - `get_user_info`: Get information about a specific Jotty user.
-  - `get_categories`: Retrieve all available categories for organizing items.
-  - `get_summary`: Get summary statistics from your Jotty account.
-  - `export_data`: Start a full export of your Jotty data (JSON or CSV).
-  - `get_export_progress`: Check the progress of an ongoing data export.
+  - `UserInfoFetcher`: Retrieves detailed information for a specified Jotty user. This administrative tool provides insights into user profiles within the MCP system.
+  - `CategoryFetcher`: Retrieves all available categories from the Jotty API. This administrative tool provides a comprehensive list of categorization options within the MCP system.
+  - `AccountSummaryFetcher`: Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.
+  - `DataExporter`: Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.
+  - `ExportProgressMonitor`: Monitors the progress of a specified data export operation. This administrative tool provides real-time status updates for data export tasks within the MCP system.
 
 ## Installation
 

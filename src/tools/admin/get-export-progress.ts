@@ -5,12 +5,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const getExportProgressModule: RegisterableModule = {
   type: 'tool',
-  name: 'get_export_progress',
-  description: 'Checks the progress of an ongoing data export',
+  name: 'ExportProgressMonitor',
+  description: 'Monitors the progress of a specified data export operation. This administrative tool provides real-time status updates for data export tasks within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'get_export_progress',
-      'Checks the progress of an ongoing data export',
+      'ExportProgressMonitor',
+      'Monitors the progress of a specified data export operation. This administrative tool provides real-time status updates for data export tasks within the MCP system.',
       {
         exportId: z.string(),
       },

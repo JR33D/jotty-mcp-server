@@ -5,12 +5,12 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const getUserInfoModule: RegisterableModule = {
   type: 'tool',
-  name: 'get_user_info',
-  description: 'Get information about a specific Jotty user',
+  name: 'UserInfoFetcher',
+  description: 'Retrieves detailed information for a specified Jotty user. This administrative tool provides insights into user profiles within the MCP system.',
   register: (server: McpServer) => {
     server.tool(
-      'get_user_info',
-      'Get information about a specific Jotty user',
+      'UserInfoFetcher',
+      'Retrieves detailed information for a specified Jotty user. This administrative tool provides insights into user profiles within the MCP system.',
       {
         username: z.string(),
       },

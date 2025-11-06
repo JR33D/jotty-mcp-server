@@ -47,8 +47,9 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     env:
-      JOTTY_BASE_URL: http://localhost:1122
-      JOTTY_API_KEY: ck_xxxxx
+      JOTTY_BASE_URL: ${{ vars.JOTTY_BASE_URL || 'http://localhost:1122' }}
+      JOTTY_API_KEY: ${{ secrets.JOTTY_API_KEY }}
+      API_KEY: ${{ secrets.API_KEY }}
     
     steps:
       - name: Checkout code

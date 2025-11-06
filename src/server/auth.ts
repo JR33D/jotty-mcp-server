@@ -1,31 +1,32 @@
-import type { NextFunction, Request, Response } from "express";
 import { env } from "../config.js";
 import { logger } from "../logger.js";
+import type { NextFunction, Request, Response } from "express";
 
 const API_KEY_HEADER = "authorization";
 const API_KEY_PREFIX = "ApiKey ";
 
-export function apiKeyAuth(req: Request, res: Response, next: NextFunction) {
+export function apiKeyAuth(req: Request, res: Response, next: NextFunction): void {
   if (process.env.STARTER_TRANSPORT !== "http") {
-    return next();
+    next();
+    return;
   }
 
   const apiKey = env.API_KEY;
-  if (!apiKey) {
-    logger.error("API_KEY not configured, but required for http transport.");
-    return res.status(500).send("Internal Server Error");
-  }
 
   const authHeader = req.headers[API_KEY_HEADER];
 
-  if (!authHeader || !authHeader.startsWith(API_KEY_PREFIX)) {
-    return res.status(401).send("Unauthorized");
+  if (authHeader === undefined || Array.isArray(authHeader) || !authHeader.startsWith(API_KEY_PREFIX)) {
+    logger.warn("Unauthorized access attempt: Missing or invalid Authorization header.");
+    res.status(401).send("Unauthorized");
+    return;
   }
 
   const token = authHeader.substring(API_KEY_PREFIX.length);
 
   if (token !== apiKey) {
-    return res.status(401).send("Unauthorized");
+    logger.warn("Unauthorized access attempt: Invalid API key provided.");
+    res.status(401).send("Unauthorized");
+    return;
   }
 
   next();

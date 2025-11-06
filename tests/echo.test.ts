@@ -8,17 +8,8 @@ describe("Echo Tool Unit Tests", () => {
 
   beforeEach(() => {
     const serverMock = {
-      tool: (name: string, _description: string, _schema: unknown, handler: (args: {
-    text: string;
-}) => {
-    content: Array<{
-        type: string;
-        text: string;
-    }>;
-}) => {
-        if (name === 'echo') {
-          echoHandler = handler;
-        }
+      tool: (_name: string, _description: string, _schema: unknown, handler: typeof echoHandler) => {
+        echoHandler = handler;
       },
     } as McpServer;
     echoModule.register(serverMock);
