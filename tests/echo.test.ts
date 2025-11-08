@@ -34,27 +34,31 @@ describe("Echo Tool Unit Tests", () => {
     handler = getHandler();
   });
 
-  it("should echo valid text", async () => {
-    const testText = "Hello, MCP!";
-    const response = await handler({ text: testText });
-    assert.strictEqual(response.content[0].text, testText);
-  });
-
-  it("should handle unicode and special characters", async () => {
-    const testText = "🚀 Unicode! Special chars: @#$%^&*() 日本語";
-    const response = await handler({ text: testText });
-    assert.strictEqual(response.content[0].text, testText);
-  });
-
-  it("should handle long text", async () => {
-    const testText = "Lorem ipsum ".repeat(100);
-    const response = await handler({ text: testText });
-    assert.strictEqual(response.content[0].text, testText);
-  });
-
-  it("should handle an empty string", async () => {
-    const testText = "";
-    const response = await handler({ text: testText });
-    assert.strictEqual(response.content[0].text, testText);
-  });
-});
+      it("should echo valid text", async () => {
+      const testText = "Hello, MCP!";
+      const response = await handler({ text: testText });
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
+      assert.strictEqual(response.content[0]!.text, testText);
+    });
+      it("should handle unicode and special characters", async () => {
+      const testText = "🚀 Unicode! Special chars: @#$%^&*() 日本語";
+      const response = await handler({ text: testText });
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
+      assert.strictEqual(response.content[0]!.text, testText);
+    });
+      it("should handle long text", async () => {
+      const testText = "Lorem ipsum ".repeat(100);
+      const response = await handler({ text: testText });
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
+      assert.strictEqual(response.content[0]!.text, testText);
+    });
+      it("should handle an empty string", async () => {
+      const testText = "";
+      const response = await handler({ text: testText });
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
+      assert.strictEqual(response.content[0]!.text, testText);
+    });});

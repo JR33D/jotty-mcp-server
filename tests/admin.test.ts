@@ -68,8 +68,10 @@ describe("Admin Tool Unit Tests", () => {
 
       const response = await handler({ type: "json" });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as { exportId: string },
+        JSON.parse(response.content[0]!.text) as { exportId: string },
         { exportId: "export-123" }
       );
     });
@@ -92,8 +94,10 @@ describe("Admin Tool Unit Tests", () => {
 
       const response = await handler();
       type Category = { id: string; name: string; path: string };
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as Array<Category>,
+        JSON.parse(response.content[0]!.text) as Array<Category>,
         categories
       );
     });
@@ -126,8 +130,10 @@ describe("Admin Tool Unit Tests", () => {
         progress: number;
         downloadUrl: string;
       };
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as ExportStatus,
+        JSON.parse(response.content[0]!.text) as ExportStatus,
         status
       );
     });
@@ -160,8 +166,10 @@ describe("Admin Tool Unit Tests", () => {
         totalItems: number;
         completedItems: number;
       };
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as Summary,
+        JSON.parse(response.content[0]!.text) as Summary,
         summary
       );
     });
@@ -192,8 +200,10 @@ describe("Admin Tool Unit Tests", () => {
         email: string;
         createdAt: string;
       };
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as UserInfo,
+        JSON.parse(response.content[0]!.text) as UserInfo,
         userInfo
       );
     });

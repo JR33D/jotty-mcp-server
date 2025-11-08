@@ -69,8 +69,10 @@ describe("Notes Tool Unit Tests", () => {
 
       const response = await handler({ title, content });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as JottyNote,
+        JSON.parse(response.content[0]!.text) as JottyNote,
         expectedNote
       );
     });
@@ -88,8 +90,10 @@ describe("Notes Tool Unit Tests", () => {
 
       const response = await handler({ title });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as JottyNote,
+        JSON.parse(response.content[0]!.text) as JottyNote,
         expectedNote
       );
       assert(
@@ -116,8 +120,10 @@ describe("Notes Tool Unit Tests", () => {
 
       const response = await handler({ title, category });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as JottyNote,
+        JSON.parse(response.content[0]!.text) as JottyNote,
         expectedNote
       );
       assert(
@@ -162,8 +168,10 @@ describe("Notes Tool Unit Tests", () => {
 
       const response = await handler();
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as Array<JottyNote>,
+        JSON.parse(response.content[0]!.text) as Array<JottyNote>,
         expectedNotes
       );
     });
@@ -173,8 +181,10 @@ describe("Notes Tool Unit Tests", () => {
 
       const response = await handler();
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as Array<JottyNote>,
+        JSON.parse(response.content[0]!.text) as Array<JottyNote>,
         []
       );
     });

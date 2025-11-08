@@ -69,8 +69,10 @@ describe("Checklist Tool Unit Tests", () => {
 
       const response = await handler({ listId: "list-1", text: "New Item" });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as ChecklistItem,
+        JSON.parse(response.content[0]!.text) as ChecklistItem,
         newItem
       );
     });
@@ -88,8 +90,10 @@ describe("Checklist Tool Unit Tests", () => {
         status: "in_progress",
       });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as ChecklistItem,
+        JSON.parse(response.content[0]!.text) as ChecklistItem,
         newItem
       );
     });
@@ -115,8 +119,10 @@ describe("Checklist Tool Unit Tests", () => {
 
       const response = await handler({ listId: "list-1", itemIndex: 0 });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as ChecklistItem,
+        JSON.parse(response.content[0]!.text) as ChecklistItem,
         checkedItem
       );
     });
@@ -147,8 +153,10 @@ describe("Checklist Tool Unit Tests", () => {
 
       const response = await handler();
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as Array<Checklist>,
+        JSON.parse(response.content[0]!.text) as Array<Checklist>,
         checklists
       );
     });
@@ -158,8 +166,10 @@ describe("Checklist Tool Unit Tests", () => {
 
       const response = await handler();
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as Array<Checklist>,
+        JSON.parse(response.content[0]!.text) as Array<Checklist>,
         []
       );
     });
@@ -185,8 +195,10 @@ describe("Checklist Tool Unit Tests", () => {
 
       const response = await handler({ listId: "list-1", itemIndex: 0 });
 
+      assert.ok(response.content && response.content.length > 0, "Response content should not be empty");
+      assert.ok(response.content[0]!.text, "Response content[0].text should exist");
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text) as ChecklistItem,
+        JSON.parse(response.content[0]!.text) as ChecklistItem,
         uncheckedItem
       );
     });
