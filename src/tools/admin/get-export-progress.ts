@@ -20,11 +20,14 @@ const getExportProgressModule: RegisterableModule<GetExportProgressModuleDeps> =
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'ExportProgressMonitor',
-      'Monitors the progress of a specified data export operation. This administrative tool provides real-time status updates for data export tasks within the MCP system.',
       {
-        exportId: z.string(),
+        title: 'Monitor Export Progress',
+        description: 'Monitors the progress of a specified data export operation. This administrative tool provides real-time status updates for data export tasks within the MCP system.',
+        inputSchema: {
+          exportId: z.string(),
+        }
       },
       async (args) => {
         const { exportId } = args;
@@ -37,6 +40,7 @@ const getExportProgressModule: RegisterableModule<GetExportProgressModuleDeps> =
               text: JSON.stringify(exportStatus, null, 2),
             },
           ],
+          structuredContent: { result: exportStatus },
         };
       }
     );

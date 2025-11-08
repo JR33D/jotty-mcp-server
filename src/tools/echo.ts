@@ -7,11 +7,14 @@ const echoModule: RegisterableModule = {
   name: "EchoTool",
   description: "A utility tool that echoes back the provided text. It serves as a basic communication verification tool within the MCP system.",
   register(server: McpServer) {
-    server.tool(
+    server.registerTool(
       "EchoTool",
-      "A utility tool that echoes back the provided text. It serves as a basic communication verification tool within the MCP system.",
       {
-        text: z.string().min(1, "Text cannot be empty").describe("Text to echo back"),
+        title: "Echo Tool",
+        description: "A utility tool that echoes back the provided text. It serves as a basic communication verification tool within the MCP system.",
+        inputSchema:{
+          text: z.string().min(1, "Text cannot be empty").describe("Text to echo back"),
+        },
       },
       (args) => {
         const text = args.text;

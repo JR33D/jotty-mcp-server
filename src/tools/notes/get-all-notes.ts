@@ -19,10 +19,13 @@ const getAllNotesModule: RegisterableModule<GetAllNotesModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'AllNotesFetcher',
-      'Retrieves all notes associated with the authenticated user from the Jotty API. This tool facilitates access to user-specific note data within the MCP system.',
-      {},
+      {
+        title: 'All Notes Fetcher',
+        description: 'Retrieves all notes associated with the authenticated user from the Jotty API. This tool facilitates access to user-specific note data within the MCP system.',
+        inputSchema: {},
+      },
       async () => {
         const client = await getClient();
         const notes = await client.getAllNotes();
@@ -33,6 +36,7 @@ const getAllNotesModule: RegisterableModule<GetAllNotesModuleDeps> = {
               text: JSON.stringify(notes, null, 2),
             },
           ],
+          structuredContent: { result: notes },
         };
       }
     );

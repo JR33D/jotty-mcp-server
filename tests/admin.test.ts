@@ -1,160 +1,131 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
-import { createTestConfig } from "./helpers/test-config.js";
-import { createJottyClient, type Category, type ExportStatus, type SummaryStats, type UserInfo } from "../src/lib/jotty-client.js";
+import { getFirstContentText } from "./helpers/test-asserts.js";
 import exportDataModule from "../src/tools/admin/export-data.js";
 import getCategoriesModule from "../src/tools/admin/get-categories.js";
 import getExportProgressModule from "../src/tools/admin/get-export-progress.js";
 import getSummaryModule from "../src/tools/admin/get-summary.js";
 import getUserInfoModule from "../src/tools/admin/get-user-info.js";
+import type { JottyClient } from "../src/lib/jotty-client.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+
+// ToolHandler type
+type ToolHandler = (params?: unknown) => Promise<{ content: Array<{ text: string }> }>;
 
 describe("Admin Tool Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
-  let testClient: ReturnType<typeof createJottyClient>;
+  let testClient: Partial<JottyClient>;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    const config = createTestConfig();
-    testClient = createJottyClient(config);
+    testClient = {
+      exportData: sandbox.stub(),
+      getCategories: sandbox.stub(),
+      getExportProgress: sandbox.stub(),
+      getSummary: sandbox.stub(),
+      getUserInfo: sandbox.stub(),
+    };
   });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
+  afterEach(() => { sandbox.restore(); });
 
-  describe("export_data", () => {
-    let handler: (args: { type: 'json' | 'csv', username?: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
+  function createServerMock(): { serverMock: McpServer; getHandler: () => ToolHandler } {
+    let handler: ToolHandler = () => Promise.resolve({ content: [] });
+    const serverMock: McpServer = {
+      registerTool: (_name: string, _config: unknown, cb: ToolHandler) => { handler = cb; },
+    } as unknown as McpServer;
+    return { serverMock, getHandler: () => handler };
+  }
+
+  describe("export-data", () => {
+    let handler: ToolHandler;
 
     beforeEach(() => {
-      const serverMock = { 
-        tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { 
-          handler = h; 
-        } 
-      } as McpServer;
-      exportDataModule.register(serverMock, { jottyClient: testClient });
+      const { serverMock, getHandler } = createServerMock();
+      exportDataModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
     });
 
-    it("should start an export", async () => {
-      const exportResult = { exportId: "export-123" };
-      sandbox.stub(testClient, "exportData").resolves(exportResult);
+    it("starts an export", async () => {
+      (testClient.exportData as sinon.SinonStub).resolves({ exportId: "export-123" });
       const response = await handler({ type: "json" });
-      if (response.content[0] != null) {
-        assert.deepStrictEqual(JSON.parse(response.content[0].text), exportResult);
-      } else {
-        assert.fail("response.content or response.content[0] is undefined");
-      }
+      const text = getFirstContentText(response);
+      const parsed: unknown = JSON.parse(text);
+      assert.deepStrictEqual(parsed, { exportId: "export-123" });
     });
   });
 
-  describe("get_categories", () => {
-    let handler: () => Promise<{ content: Array<{ type: string; text: string }> }>;
+  describe("get-categories", () => {
+    let handler: ToolHandler;
 
     beforeEach(() => {
-      const serverMock = { 
-        tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { 
-          handler = h; 
-        } 
-      } as McpServer;
-      getCategoriesModule.register(serverMock, { jottyClient: testClient });
+      const { serverMock, getHandler } = createServerMock();
+      getCategoriesModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
     });
 
-    it("should get all categories", async () => {
-      const categories: Array<Category> = [{ id: "cat-1", name: "Work", path: "/work" }];
-      sandbox.stub(testClient, "getCategories").resolves(categories);
+    it("returns all categories", async () => {
+      const categories = [{ id: "cat-1", name: "Work", path: "/work" }];
+      (testClient.getCategories as sinon.SinonStub).resolves(categories);
       const response = await handler();
-      if (response.content[0] != null) {
-        assert.deepStrictEqual(JSON.parse(response.content[0].text), categories);
-      } else {
-        assert.fail("response.content or response.content[0] is undefined");
-      }
+      const text = getFirstContentText(response);
+      const parsed: unknown = JSON.parse(text);
+      assert.deepStrictEqual(parsed, categories);
     });
   });
 
-  describe("get_export_progress", () => {
-    let handler: (args: { exportId: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
+  describe("get-export-progress", () => {
+    let handler: ToolHandler;
 
     beforeEach(() => {
-      const serverMock = { 
-        tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { 
-          handler = h; 
-        } 
-      } as McpServer;
-      getExportProgressModule.register(serverMock, { jottyClient: testClient });
+      const { serverMock, getHandler } = createServerMock();
+      getExportProgressModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
     });
 
-    it("should get export progress", async () => {
-      const exportStatus: ExportStatus = { 
-        id: "export-123", 
-        status: "completed", 
-        progress: 100, 
-        downloadUrl: "http://example.com/export.zip" 
-      };
-      sandbox.stub(testClient, "getExportProgress").resolves(exportStatus);
+    it("returns export progress", async () => {
+      const status = { id: "export-123", status: "completed", progress: 100, downloadUrl: "http://example.com/export.zip" };
+      (testClient.getExportProgress as sinon.SinonStub).resolves(status);
       const response = await handler({ exportId: "export-123" });
-      if (response.content[0] != null) {
-        assert.deepStrictEqual(JSON.parse(response.content[0].text), exportStatus);
-      } else {
-        assert.fail("response.content or response.content[0] is undefined");
-      }
+      const text = getFirstContentText(response);
+      assert.deepStrictEqual(JSON.parse(text), status);
     });
   });
 
-  describe("get_summary", () => {
-    let handler: (args: { username?: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
+  describe("get-summary", () => {
+    let handler: ToolHandler;
 
     beforeEach(() => {
-      const serverMock = { 
-        tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { 
-          handler = h; 
-        } 
-      } as McpServer;
-      getSummaryModule.register(serverMock, { jottyClient: testClient });
+      const { serverMock, getHandler } = createServerMock();
+      getSummaryModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
     });
 
-    it("should get summary statistics", async () => {
-      const summary: SummaryStats = { 
-        totalChecklists: 5, 
-        totalNotes: 10, 
-        totalItems: 50, 
-        completedItems: 25 
-      };
-      sandbox.stub(testClient, "getSummary").resolves(summary);
+    it("returns summary stats", async () => {
+      const summary = { totalChecklists: 5, totalNotes: 10, totalItems: 50, completedItems: 25 };
+      (testClient.getSummary as sinon.SinonStub).resolves(summary);
       const response = await handler({});
-      if (response.content[0] != null) {
-        assert.deepStrictEqual(JSON.parse(response.content[0].text), summary);
-      } else {
-        assert.fail("response.content or response.content[0] is undefined");
-      }
+      const text = getFirstContentText(response);
+      assert.deepStrictEqual(JSON.parse(text), summary);
     });
   });
 
-  describe("get_user_info", () => {
-    let handler: (args: { username: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
+  describe("get-user-info", () => {
+    let handler: ToolHandler;
 
     beforeEach(() => {
-      const serverMock = { 
-        tool: (_name: string, _desc: string, _schema: object, h: typeof handler) => { 
-          handler = h; 
-        } 
-      } as McpServer;
-      getUserInfoModule.register(serverMock, { jottyClient: testClient });
+      const { serverMock, getHandler } = createServerMock();
+      getUserInfoModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
     });
 
-    it("should get user info", async () => {
-      const userInfo: UserInfo = { 
-        username: "testuser", 
-        email: "test@example.com", 
-        createdAt: new Date().toISOString() 
-      };
-      sandbox.stub(testClient, "getUserInfo").resolves(userInfo);
+    it("returns user info", async () => {
+      const userInfo = { username: "testuser", email: "test@example.com", createdAt: new Date().toISOString() };
+      (testClient.getUserInfo as sinon.SinonStub).resolves(userInfo);
       const response = await handler({ username: "testuser" });
-      if (response.content[0] != null) {
-        assert.deepStrictEqual(JSON.parse(response.content[0].text), userInfo);
-      } else {
-        assert.fail("response.content or response.content[0] is undefined");
-      }
+      const text = getFirstContentText(response);
+      assert.deepStrictEqual(JSON.parse(text), userInfo);
     });
   });
 });

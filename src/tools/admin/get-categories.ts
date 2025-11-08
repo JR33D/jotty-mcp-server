@@ -19,10 +19,13 @@ const getCategoriesModule: RegisterableModule<GetCategoriesModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'CategoryFetcher',
-      'Retrieves all available categories from the Jotty API. This administrative tool provides a comprehensive list of categorization options within the MCP system.',
-      {},
+      {
+        title: 'Get all Categories',
+        description: 'Retrieves all available categories from the Jotty API. This administrative tool provides a comprehensive list of categorization options within the MCP system.',
+        inputSchema: {},
+      },
       async () => {
         const client = await getClient();
         const categories = await client.getCategories();
@@ -33,6 +36,7 @@ const getCategoriesModule: RegisterableModule<GetCategoriesModuleDeps> = {
               text: JSON.stringify(categories, null, 2),
             },
           ],
+          structuredContent: { result: categories },
         };
       }
     );

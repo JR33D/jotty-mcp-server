@@ -20,14 +20,17 @@ const addChecklistItemModule: RegisterableModule<AddChecklistItemModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'ChecklistItemAdder',
-      'Adds a new item to a specified checklist via the Jotty API. This tool allows agents to extend existing checklists with new tasks or entries within the MCP system.',
       {
-        listId: z.string(),
-        text: z.string(),
-        status: z.enum(['todo', 'done', 'in_progress', 'paused']).optional(),
-        time: z.number().optional(),
+        title: 'Checklist Item Adder',
+        description: 'Adds a new item to a specified checklist via the Jotty API. This tool allows agents to extend existing checklists with new tasks or entries within the MCP system.',
+        inputSchema: {
+          listId: z.string(),
+          text: z.string(),
+          status: z.enum(['todo', 'done', 'in_progress', 'paused']).optional(),
+          time: z.number().optional(),
+        },
       },
       async (args) => {
         const { listId, text, status, time } = args;
@@ -40,6 +43,7 @@ const addChecklistItemModule: RegisterableModule<AddChecklistItemModuleDeps> = {
               text: JSON.stringify(item, null, 2),
             },
           ],
+          structuredContent: { result: item },
         };
       }
     );

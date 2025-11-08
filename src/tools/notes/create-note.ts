@@ -20,13 +20,16 @@ const createNoteModule: RegisterableModule<CreateNoteModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'NoteCreator',
-      'Facilitates the creation of new notes for the authenticated user via the Jotty API. This tool allows agents to add new textual information to the user\'s collection within the MCP system.',
       {
-        title: z.string(),
-        content: z.string().optional(),
-        category: z.string().optional(),
+        title: 'Note Creator',
+        description: 'Facilitates the creation of new notes for the authenticated user via the Jotty API. This tool allows agents to add new textual information to the user\'s collection within the MCP system.',
+        inputSchema: {
+          title: z.string(),
+          content: z.string().optional(),
+          category: z.string().optional(),
+        },
       },
       async (args) => {
         const { title, content, category } = args;
@@ -39,6 +42,7 @@ const createNoteModule: RegisterableModule<CreateNoteModuleDeps> = {
               text: JSON.stringify(note, null, 2),
             },
           ],
+          structuredContent: { result: note },
         };
       }
     );

@@ -20,11 +20,14 @@ const getUserInfoModule: RegisterableModule<GetUserInfoModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'UserInfoFetcher',
-      'Retrieves detailed information for a specified Jotty user. This administrative tool provides insights into user profiles within the MCP system.',
       {
-        username: z.string(),
+        title: 'User Info Fetcher',
+        description: 'Retrieves detailed information for a specified Jotty user. This administrative tool provides insights into user profiles within the MCP system.',
+        inputSchema:{
+          username: z.string(),
+        },
       },
       async (args) => {
         const { username } = args;
@@ -37,6 +40,7 @@ const getUserInfoModule: RegisterableModule<GetUserInfoModuleDeps> = {
               text: JSON.stringify(userInfo, null, 2),
             },
           ],
+          structuredContent: { result: userInfo },
         };
       }
     );

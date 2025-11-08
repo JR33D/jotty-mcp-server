@@ -26,11 +26,14 @@ const <%= h.changeCase.camelCase(name) %>Module: RegisterableModule = {
   name: "<%= name %>",
   description: "<%= description %>",
   register(server: McpServer) {
-    server.tool(
+    server.registerTool(
       "<%= name %>",
-      "<%= description %>",
       {
-        input: z.string().describe("Input text"),
+        title: "<%= name %>",
+        description: "<%= description %>",
+        inputSchema: {
+          input: z.string().describe("Input text"),
+        },
       },
       async (args) => {
         const { input } = args;
