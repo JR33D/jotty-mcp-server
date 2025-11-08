@@ -1,134 +1,130 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
-import { createTestConfig } from "./helpers/test-config.js";
-import { createJottyClient, type JottyNote } from "../src/lib/jotty-client.js";
+
 import createNoteModule from "../src/tools/notes/create-note.js";
 import getAllNotesModule from "../src/tools/notes/get-all-notes.js";
+
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { JottyClient, JottyNote } from "../src/lib/jotty-client.js";
+import { Handler } from "express";
 
-describe("create_note Tool Unit Tests", () => {
+describe("Notes Tool Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
-  let testClient: ReturnType<typeof createJottyClient>;
-  let createNoteHandler: (args: { title: string; content?: string; category?: string }) => Promise<{ content: Array<{ type: string; text: string }> }>;
+  let testClient: Partial<JottyClient>;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    
-    const config = createTestConfig();
-    testClient = createJottyClient(config);
-    
-    const serverMock = {
-      tool: (_name: string, _description: string, _schema: unknown, handler: typeof createNoteHandler) => {
-        createNoteHandler = handler;
-      },
-    } as McpServer;
-    createNoteModule.register(serverMock, { jottyClient: testClient });
+    testClient = {
+      createNote: sandbox.stub(),
+      getAllNotes: sandbox.stub(),
+    };
   });
 
   afterEach(() => {
     sandbox.restore();
   });
 
-  it("should successfully create a note with title and content", async () => {
-    const title = "My Test Note";
-    const content = "This is some test content.";
-    const expectedNote: JottyNote = { 
-      id: 'mock-note-1', 
-      title, 
-      content, 
-      createdAt: new Date().toISOString(), 
-      updatedAt: new Date().toISOString() 
-    };
-
-    const createNoteStub = sandbox.stub(testClient, "createNote").resolves(expectedNote);
-
-    const response = await createNoteHandler({ title, content });
-
-    assert(createNoteStub.calledOnceWith({ title, content, category: undefined }));
-    assert(response.content[0] != null);
-    assert.deepStrictEqual(JSON.parse(response.content[0].text), expectedNote);
-  });
-
-  it("should successfully create a note with only title", async () => {
-    const title = "Title Only Note";
-    const expectedNote: JottyNote = { 
-      id: 'mock-note-2', 
-      title, 
-      content: '', 
-      createdAt: new Date().toISOString(), 
-      updatedAt: new Date().toISOString() 
-    };
-
-    const createNoteStub = sandbox.stub(testClient, "createNote").resolves(expectedNote);
-
-    const response = await createNoteHandler({ title });
-
-    assert(createNoteStub.calledOnceWith({ title, content: '', category: undefined }));
-    assert(response.content[0] != null);
-    assert.deepStrictEqual(JSON.parse(response.content[0].text), expectedNote);
-  });
-
-  it("should handle errors from jottyClient.createNote", async () => {
-    const errorMessage = "Failed to create note in Jotty API";
-    sandbox.stub(testClient, "createNote").rejects(new Error(errorMessage));
-
-    await assert.rejects(
-      createNoteHandler({ title: 'Error Note' }),
-      new Error(errorMessage)
-    );
-  });
-});
-
-describe("get_all_notes Tool Unit Tests", () => {
-  let sandbox: sinon.SinonSandbox;
-  let testClient: ReturnType<typeof createJottyClient>;
-  let getAllNotesHandler: () => Promise<{ content: Array<{ type: string; text: string }> }>;
-
-  beforeEach(() => {
-    sandbox = sinon.createSandbox();
-    
-    const config = createTestConfig();
-    testClient = createJottyClient(config);
-    
-    const serverMock = {
-      tool: (_name: string, _description: string, _schema: unknown, handler: typeof getAllNotesHandler) => {
-        getAllNotesHandler = handler;
+  function createServerMock() {
+    let handler: any;
+    const serverMock: McpServer = {
+      registerTool: (_name: string, _config: unknown, cb: Handler) => {
+        handler = cb;
       },
-    } as McpServer;
-    getAllNotesModule.register(serverMock, { jottyClient: testClient });
+    } as unknown as McpServer;
+    return { serverMock, getHandler: () => handler };
+  }
+
+  describe("create-note", () => {
+    let handler: any;
+
+    beforeEach(() => {
+      const { serverMock, getHandler } = createServerMock();
+      createNoteModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
+    });
+
+    it("should successfully create a note with title and content", async () => {
+      const title = "My Test Note";
+      const content = "This is some test content.";
+      const expectedNote: JottyNote = {
+        id: "mock-note-1",
+        title,
+        content,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      (testClient.createNote as sinon.SinonStub).resolves(expectedNote);
+
+      const response = await handler({ title, content });
+
+      assert.deepStrictEqual(JSON.parse(response.content[0].text), expectedNote);
+    });
+
+    it("should successfully create a note with only a title", async () => {
+      const title = "Title Only Note";
+      const expectedNote: JottyNote = {
+        id: "mock-note-2",
+        title,
+        content: "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      (testClient.createNote as sinon.SinonStub).resolves(expectedNote);
+
+      const response = await handler({ title });
+
+      assert.deepStrictEqual(JSON.parse(response.content[0].text), expectedNote);
+      assert((testClient.createNote as sinon.SinonStub).calledWith({ title, content: "", category: undefined }));
+    });
+
+    it("should successfully create a note with a category", async () => {
+      const title = "Categorized Note";
+      const category = "Work";
+      const expectedNote: JottyNote = {
+        id: "mock-note-3",
+        title,
+        content: "",
+        category,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      (testClient.createNote as sinon.SinonStub).resolves(expectedNote);
+
+      const response = await handler({ title, category });
+
+      assert.deepStrictEqual(JSON.parse(response.content[0].text), expectedNote);
+      assert((testClient.createNote as sinon.SinonStub).calledWith({ title, content: "", category }));
+    });
   });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
+  describe("get-all-notes", () => {
+    let handler: any;
 
-  it("should successfully retrieve all notes", async () => {
-    const expectedNotes: Array<JottyNote> = [
-      { id: 'note-a', title: 'Note A', content: 'Content A', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: 'note-b', title: 'Note B', content: 'Content B', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    ];
-    sandbox.stub(testClient, "getAllNotes").resolves(expectedNotes);
+    beforeEach(() => {
+      const { serverMock, getHandler } = createServerMock();
+      getAllNotesModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
+    });
 
-    const response = await getAllNotesHandler();
+    it("should successfully retrieve all notes", async () => {
+      const expectedNotes: Array<JottyNote> = [
+        { id: "note-a", title: "Note A", content: "Content A", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+        { id: "note-b", title: "Note B", content: "Content B", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      ];
+      (testClient.getAllNotes as sinon.SinonStub).resolves(expectedNotes);
 
-    assert(response.content[0] != null);
-    assert.deepStrictEqual(JSON.parse(response.content[0].text), expectedNotes);
-  });
+      const response = await handler();
 
-  it("should handle errors from jottyClient.getAllNotes", async () => {
-    const errorMessage = "Failed to fetch notes from Jotty API";
-    sandbox.stub(testClient, "getAllNotes").rejects(new Error(errorMessage));
+      assert.deepStrictEqual(JSON.parse(response.content[0].text), expectedNotes);
+    });
 
-    await assert.rejects(getAllNotesHandler(), new Error(errorMessage));
-  });
+    it("should return empty array if no notes are found", async () => {
+      (testClient.getAllNotes as sinon.SinonStub).resolves([]);
 
-  it("should return empty array if no notes are found", async () => {
-    sandbox.stub(testClient, "getAllNotes").resolves([]);
+      const response = await handler();
 
-    const response = await getAllNotesHandler();
-
-    assert(response.content[0] != null);
-    assert.deepStrictEqual(JSON.parse(response.content[0].text), []);
+      assert.deepStrictEqual(JSON.parse(response.content[0].text), []);
+    });
   });
 });

@@ -20,12 +20,15 @@ const exportDataModule: RegisterableModule<ExportDataModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'DataExporter',
-      'Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.',
       {
-        type: z.enum(['json', 'csv']),
-        username: z.string().optional(),
+        title: 'Export Jotty Data',
+        description: 'Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.',
+        inputSchema: {
+          type: z.enum(['json', 'csv']),
+          username: z.string().optional(),
+        }
       },
       async (args) => {
         const { type, username } = args;
@@ -38,6 +41,7 @@ const exportDataModule: RegisterableModule<ExportDataModuleDeps> = {
               text: JSON.stringify(exportResult, null, 2),
             },
           ],
+          structuredContent: { result: exportResult },
         };
       }
     );

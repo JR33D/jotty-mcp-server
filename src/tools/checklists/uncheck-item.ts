@@ -20,12 +20,15 @@ const uncheckItemModule: RegisterableModule<UncheckItemModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'ChecklistItemUnchecker',
-      'Marks a specified item within a checklist as incomplete via the Jotty API. This tool enables agents to manage the status of checklist items within the MCP system.',
       {
-        listId: z.string(),
-        itemIndex: z.number(),
+        title: 'Checklist Item Unchecker',
+        description: 'Marks a specified item within a checklist as incomplete via the Jotty API. This tool enables agents to manage the status of checklist items within the MCP system.',
+        inputSchema: {
+          listId: z.string(),
+          itemIndex: z.number(),
+        },
       },
       async (args) => {
         const { listId, itemIndex } = args;
@@ -38,6 +41,7 @@ const uncheckItemModule: RegisterableModule<UncheckItemModuleDeps> = {
               text: JSON.stringify(item, null, 2),
             },
           ],
+          structuredContent: { result: item },
         };
       }
     );

@@ -19,10 +19,13 @@ const getAllChecklistsModule: RegisterableModule<GetAllChecklistsModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'AllChecklistsFetcher',
-      'Retrieves all checklists associated with the authenticated user from the Jotty API. This tool provides agents with access to the user\'s complete list of checklists within the MCP system.',
-      {},
+      {
+        title: 'All Checklist Fetcher', 
+        description: 'Retrieves all checklists associated with the authenticated user from the Jotty API. This tool provides agents with access to the user\'s complete list of checklists within the MCP system.',
+        inputSchema: {},
+      },
       async () => {
         const client = await getClient();
         const checklists = await client.getAllChecklists();
@@ -33,6 +36,7 @@ const getAllChecklistsModule: RegisterableModule<GetAllChecklistsModuleDeps> = {
               text: JSON.stringify(checklists, null, 2),
             },
           ],
+          structuredContent: { result: checklists },
         };
       }
     );

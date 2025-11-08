@@ -44,6 +44,12 @@ describe("Timestamp Resource Unit Tests", () => {
     assert.strictEqual(response.contents[0].text, testDate.toLocaleString());
   });
 
+  it("should return friendly formatted timestamp", () => {
+    const response = resourceHandler(new URL("timestamp://friendly"), { format: "friendly" });
+    assert(response.contents[0] != null);
+    assert.strictEqual(response.contents[0].text, "2023-10-27");
+  });
+
   it("should handle unknown format gracefully", () => {
     const response = resourceHandler(new URL("timestamp://invalid"), { format: "invalid" });
     assert(response.contents[0] != null);

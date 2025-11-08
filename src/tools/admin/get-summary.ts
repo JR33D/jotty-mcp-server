@@ -20,11 +20,14 @@ const getSummaryModule: RegisterableModule<GetSummaryModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'AccountSummaryFetcher',
-      'Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.',
       {
-        username: z.string().optional(),
+        title: 'Account Summary Fetcher',
+        description: 'Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.',
+        inputSchema:{
+          username: z.string().optional(),
+        },
       },
       async (args) => {
         const { username: _username } = args;
@@ -37,6 +40,7 @@ const getSummaryModule: RegisterableModule<GetSummaryModuleDeps> = {
               text: JSON.stringify(summary, null, 2),
             },
           ],
+          structuredContent: { result: summary },
         };
       }
     );

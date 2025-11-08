@@ -20,12 +20,15 @@ const checkItemModule: RegisterableModule<CheckItemModuleDeps> = {
       return await getJottyClient();
     };
 
-    server.tool(
+    server.registerTool(
       'ChecklistItemChecker',
-      'Marks a specified item within a checklist as complete via the Jotty API. This tool allows agents to update the status of checklist items within the MCP system.',
       {
-        listId: z.string(),
-        itemIndex: z.number(),
+        title: 'Checklist Item Checker',
+        description: 'Marks a specified item within a checklist as complete via the Jotty API. This tool allows agents to update the status of checklist items within the MCP system.',
+        inputSchema: {
+          listId: z.string(),
+          itemIndex: z.number(),
+        },
       },
       async (args) => {
         const { listId, itemIndex } = args;
@@ -38,6 +41,7 @@ const checkItemModule: RegisterableModule<CheckItemModuleDeps> = {
               text: JSON.stringify(item, null, 2),
             },
           ],
+          structuredContent: { result: item },
         };
       }
     );

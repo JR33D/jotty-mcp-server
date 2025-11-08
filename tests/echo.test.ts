@@ -2,37 +2,48 @@ import assert from "node:assert";
 import { describe, it, beforeEach } from "node:test";
 import echoModule from "../src/tools/echo.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { Handler } from "express";
 
 describe("Echo Tool Unit Tests", () => {
-  let echoHandler: (args: { text: string }) => { content: Array<{ type: string; text: string }> };
+  let handler: any;
+
+  function createServerMock() {
+    let handler: any;
+    const serverMock: McpServer = {
+      registerTool: (_name: string, _config: unknown, cb: Handler) => {
+        handler = cb;
+      },
+    } as unknown as McpServer;
+    return { serverMock, getHandler: () => handler };
+  }
 
   beforeEach(() => {
-    const serverMock = {
-      tool: (_name: string, _description: string, _schema: unknown, handler: typeof echoHandler) => {
-        echoHandler = handler;
-      },
-    } as McpServer;
+    const { serverMock, getHandler } = createServerMock();
     echoModule.register(serverMock);
+    handler = getHandler();
   });
 
-  it("should echo valid text", () => {
+  it("should echo valid text", async () => {
     const testText = "Hello, MCP!";
-    const response = echoHandler({ text: testText });
-    assert(response.content[0] != null);
+    const response = await handler({ text: testText });
     assert.strictEqual(response.content[0].text, testText);
   });
 
-  it("should handle unicode and special characters", () => {
+  it("should handle unicode and special characters", async () => {
     const testText = "🚀 Unicode! Special chars: @#$%^&*() 日本語";
-    const response = echoHandler({ text: testText });
-    assert(response.content[0] != null);
+    const response = await handler({ text: testText });
     assert.strictEqual(response.content[0].text, testText);
   });
 
-  it("should handle long text", () => {
+  it("should handle long text", async () => {
     const testText = "Lorem ipsum ".repeat(100);
-    const response = echoHandler({ text: testText });
-    assert(response.content[0] != null);
+    const response = await handler({ text: testText });
+    assert.strictEqual(response.content[0].text, testText);
+  });
+
+  it("should handle an empty string", async () => {
+    const testText = "";
+    const response = await handler({ text: testText });
     assert.strictEqual(response.content[0].text, testText);
   });
 });
