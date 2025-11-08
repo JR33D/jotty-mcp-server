@@ -9,3 +9,5 @@ export {
 } from "./test-client.js";
 
 export type { TestClientConfig } from "./test-client.ts";
+
+export { createTestConfig } from "./test-config.js";
