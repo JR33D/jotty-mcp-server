@@ -2,8 +2,8 @@ import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
 import systemInfoModule, { systemInfoHandler } from "../src/resources/system-info.js";
-import type * as os from "os";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type * as os from "os";
 
 describe("System Info Resource Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
@@ -38,7 +38,9 @@ describe("System Info Resource Unit Tests", () => {
       sandbox.stub(process, "version").value("v20.0.0");
 
       const response = systemInfoHandler(mockOs);
-      const systemInfo = JSON.parse(response.contents[0].text);
+      const systemInfo = JSON.parse(
+        response.contents[0].text
+      ) as typeof mockSystemInfo;
 
       assert.deepStrictEqual(systemInfo, mockSystemInfo);
     });

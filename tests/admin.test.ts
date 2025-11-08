@@ -1,20 +1,22 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
-
 import exportDataModule from "../src/tools/admin/export-data.js";
 import getCategoriesModule from "../src/tools/admin/get-categories.js";
 import getExportProgressModule from "../src/tools/admin/get-export-progress.js";
 import getSummaryModule from "../src/tools/admin/get-summary.js";
 import getUserInfoModule from "../src/tools/admin/get-user-info.js";
-
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { JottyClient } from "../src/lib/jotty-client.js";
-import { Handler } from "express";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+
+// Define a generic type for the tool handler function
+type ToolHandler = (
+  params?: unknown
+) => Promise<{ content: Array<{ text: string }> }>;
 
 describe("Admin Tool Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
-  let testClient: Partial<JottyClient>; // minimal stub for each test
+  let testClient: Partial<JottyClient>;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
@@ -31,10 +33,17 @@ describe("Admin Tool Unit Tests", () => {
     sandbox.restore();
   });
 
-  function createServerMock() {
-    let handler: any;
+  function createServerMock(): {
+    serverMock: McpServer;
+    getHandler: () => ToolHandler;
+  } {
+    let handler: ToolHandler = () => Promise.resolve({ content: [] });
     const serverMock: McpServer = {
-      registerTool: (_name: string, _config: unknown, cb: Handler) => {
+      registerTool: (
+        _name: string,
+        _config: unknown,
+        cb: ToolHandler
+      ): void => {
         handler = cb;
       },
     } as unknown as McpServer;
@@ -42,32 +51,38 @@ describe("Admin Tool Unit Tests", () => {
   }
 
   describe("export-data", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      exportDataModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      exportDataModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
     it("starts an export", async () => {
-      (testClient.exportData as sinon.SinonStub).resolves({ exportId: "export-123" });
+      (testClient.exportData as sinon.SinonStub).resolves({
+        exportId: "export-123",
+      });
 
       const response = await handler({ type: "json" });
 
       assert.deepStrictEqual(
-        JSON.parse(response.content[0].text),
+        JSON.parse(response.content[0].text) as { exportId: string },
         { exportId: "export-123" }
       );
     });
   });
 
   describe("get-categories", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      getCategoriesModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      getCategoriesModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
@@ -76,65 +91,111 @@ describe("Admin Tool Unit Tests", () => {
       (testClient.getCategories as sinon.SinonStub).resolves(categories);
 
       const response = await handler();
-
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), categories);
+      type Category = { id: string; name: string; path: string };
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as Array<Category>,
+        categories
+      );
     });
   });
 
   describe("get-export-progress", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      getExportProgressModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      getExportProgressModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
     it("returns export progress", async () => {
-      const status = { id: "export-123", status: "completed", progress: 100, downloadUrl: "http://example.com/export.zip" };
+      const status = {
+        id: "export-123",
+        status: "completed",
+        progress: 100,
+        downloadUrl: "http://example.com/export.zip",
+      };
       (testClient.getExportProgress as sinon.SinonStub).resolves(status);
 
       const response = await handler({ exportId: "export-123" });
-
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), status);
+      type ExportStatus = {
+        id: string;
+        status: string;
+        progress: number;
+        downloadUrl: string;
+      };
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as ExportStatus,
+        status
+      );
     });
   });
 
   describe("get-summary", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      getSummaryModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      getSummaryModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
     it("returns summary stats", async () => {
-      const summary = { totalChecklists: 5, totalNotes: 10, totalItems: 50, completedItems: 25 };
+      const summary = {
+        totalChecklists: 5,
+        totalNotes: 10,
+        totalItems: 50,
+        completedItems: 25,
+      };
       (testClient.getSummary as sinon.SinonStub).resolves(summary);
 
       const response = await handler({});
-
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), summary);
+      type Summary = {
+        totalChecklists: number;
+        totalNotes: number;
+        totalItems: number;
+        completedItems: number;
+      };
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as Summary,
+        summary
+      );
     });
   });
 
   describe("get-user-info", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      getUserInfoModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      getUserInfoModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
     it("returns user info", async () => {
-      const userInfo = { username: "testuser", email: "test@example.com", createdAt: new Date().toISOString() };
+      const userInfo = {
+        username: "testuser",
+        email: "test@example.com",
+        createdAt: new Date().toISOString(),
+      };
       (testClient.getUserInfo as sinon.SinonStub).resolves(userInfo);
 
       const response = await handler({ username: "testuser" });
-
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), userInfo);
+      type UserInfo = {
+        username: string;
+        email: string;
+        createdAt: string;
+      };
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as UserInfo,
+        userInfo
+      );
     });
   });
 });

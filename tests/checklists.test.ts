@@ -1,19 +1,25 @@
 import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
-
 import addChecklistItemModule from "../src/tools/checklists/add-checklist-item.js";
 import checkItemModule from "../src/tools/checklists/check-item.js";
 import getAllChecklistsModule from "../src/tools/checklists/get-all-checklists.js";
 import uncheckItemModule from "../src/tools/checklists/uncheck-item.js";
-
+import type {
+  JottyClient,
+  ChecklistItem,
+  Checklist,
+} from "../src/lib/jotty-client.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { JottyClient, ChecklistItem, Checklist } from "../src/lib/jotty-client.js";
-import { Handler } from "express";
+
+// Define a generic type for the tool handler function
+type ToolHandler = (
+  params?: unknown
+) => Promise<{ content: Array<{ text: string }> }>;
 
 describe("Checklist Tool Unit Tests", () => {
   let sandbox: sinon.SinonSandbox;
-  let testClient: Partial<JottyClient>; // minimal stub for each test
+  let testClient: Partial<JottyClient>;
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
@@ -29,10 +35,17 @@ describe("Checklist Tool Unit Tests", () => {
     sandbox.restore();
   });
 
-  function createServerMock() {
-    let handler: any;
+  function createServerMock(): {
+    serverMock: McpServer;
+    getHandler: () => ToolHandler;
+  } {
+    let handler: ToolHandler = () => Promise.resolve({ content: [] });
     const serverMock: McpServer = {
-      registerTool: (_name: string, _config: unknown, cb: Handler) => {
+      registerTool: (
+        _name: string,
+        _config: unknown,
+        cb: ToolHandler
+      ): void => {
         handler = cb;
       },
     } as unknown as McpServer;
@@ -40,11 +53,13 @@ describe("Checklist Tool Unit Tests", () => {
   }
 
   describe("add-checklist-item", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      addChecklistItemModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      addChecklistItemModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
@@ -54,56 +69,88 @@ describe("Checklist Tool Unit Tests", () => {
 
       const response = await handler({ listId: "list-1", text: "New Item" });
 
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), newItem);
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as ChecklistItem,
+        newItem
+      );
     });
 
     it("should add an item to a checklist with a specific status", async () => {
-      const newItem: ChecklistItem = { text: "New Item", status: "in_progress" };
+      const newItem: ChecklistItem = {
+        text: "New Item",
+        status: "in_progress",
+      };
       (testClient.addChecklistItem as sinon.SinonStub).resolves(newItem);
 
-      const response = await handler({ listId: "list-1", text: "New Item", status: "in_progress" });
+      const response = await handler({
+        listId: "list-1",
+        text: "New Item",
+        status: "in_progress",
+      });
 
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), newItem);
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as ChecklistItem,
+        newItem
+      );
     });
   });
 
   describe("check-item", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      checkItemModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      checkItemModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
     it("should check an item in a checklist", async () => {
-      const checkedItem: ChecklistItem = { text: "Checked Item", status: "done" };
+      const checkedItem: ChecklistItem = {
+        text: "Checked Item",
+        status: "done",
+      };
       (testClient.checkItem as sinon.SinonStub).resolves(checkedItem);
 
       const response = await handler({ listId: "list-1", itemIndex: 0 });
 
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), checkedItem);
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as ChecklistItem,
+        checkedItem
+      );
     });
   });
 
   describe("get-all-checklists", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      getAllChecklistsModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      getAllChecklistsModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
     it("should get all checklists", async () => {
       const checklists: Array<Checklist> = [
-        { id: "list-1", title: "My Checklist", items: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+        {
+          id: "list-1",
+          title: "My Checklist",
+          items: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
       ];
       (testClient.getAllChecklists as sinon.SinonStub).resolves(checklists);
 
       const response = await handler();
 
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), checklists);
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as Array<Checklist>,
+        checklists
+      );
     });
 
     it("should return an empty array if no checklists are found", async () => {
@@ -111,26 +158,37 @@ describe("Checklist Tool Unit Tests", () => {
 
       const response = await handler();
 
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), []);
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as Array<Checklist>,
+        []
+      );
     });
   });
 
   describe("uncheck-item", () => {
-    let handler: any;
+    let handler: ToolHandler;
 
     beforeEach(() => {
       const { serverMock, getHandler } = createServerMock();
-      uncheckItemModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      uncheckItemModule.register(serverMock, {
+        jottyClient: testClient as JottyClient,
+      });
       handler = getHandler();
     });
 
     it("should uncheck an item in a checklist", async () => {
-      const uncheckedItem: ChecklistItem = { text: "Unchecked Item", status: "todo" };
+      const uncheckedItem: ChecklistItem = {
+        text: "Unchecked Item",
+        status: "todo",
+      };
       (testClient.uncheckItem as sinon.SinonStub).resolves(uncheckedItem);
 
       const response = await handler({ listId: "list-1", itemIndex: 0 });
 
-      assert.deepStrictEqual(JSON.parse(response.content[0].text), uncheckedItem);
+      assert.deepStrictEqual(
+        JSON.parse(response.content[0].text) as ChecklistItem,
+        uncheckedItem
+      );
     });
   });
 });

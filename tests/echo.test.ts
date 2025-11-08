@@ -2,15 +2,26 @@ import assert from "node:assert";
 import { describe, it, beforeEach } from "node:test";
 import echoModule from "../src/tools/echo.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { Handler } from "express";
+
+// Define a generic type for the tool handler function
+type ToolHandler = (
+  params?: unknown
+) => Promise<{ content: Array<{ text: string }> }>;
 
 describe("Echo Tool Unit Tests", () => {
-  let handler: any;
+  let handler: ToolHandler;
 
-  function createServerMock() {
-    let handler: any;
+  function createServerMock(): {
+    serverMock: McpServer;
+    getHandler: () => ToolHandler;
+  } {
+    let handler: ToolHandler = () => Promise.resolve({ content: [] });
     const serverMock: McpServer = {
-      registerTool: (_name: string, _config: unknown, cb: Handler) => {
+      registerTool: (
+        _name: string,
+        _config: unknown,
+        cb: ToolHandler
+      ): void => {
         handler = cb;
       },
     } as unknown as McpServer;
