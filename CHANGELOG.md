@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/JR33D/jotty-mcp-server/compare/v1.0.0...v1.1.0) (2025-11-08)
+
+
+### Features
+
+* Update dependencies and refactor for SDK changes ([#9](https://github.com/JR33D/jotty-mcp-server/issues/9)) ([8809449](https://github.com/JR33D/jotty-mcp-server/commit/8809449aaccf55caa3e5898cfc84ffff992cf6d2))
+
 ## 1.0.0 (2025-11-06)
 
 
