@@ -20,16 +20,20 @@ export async function boot(mode?: TransportMode): Promise<void> {
     mode ??
     (process.env.STARTER_TRANSPORT as TransportMode | undefined) ??
     "stdio";
-  const server = new McpServer({
-    name: "jotty-mcp-server",
-    version: "0.1.0",
-    capabilities: {
-      tools: {},
-      resources: {},
-      prompts: {},
-      completions: {},
+  const server = new McpServer(
+    {
+      name: "jotty-mcp-server",
+      version: "0.1.0",
     },
-  });
+    {
+      capabilities: {
+        tools: {},
+        resources: {},
+        prompts: {},
+        completions: {},
+      },
+    }
+  );
 
   await autoRegisterModules(server);
 
@@ -66,7 +70,12 @@ export async function boot(mode?: TransportMode): Promise<void> {
       origin: corsOrigin,
       credentials: true,
       methods: ["GET", "POST", "OPTIONS", "DELETE"],
-      allowedHeaders: ["Content-Type", "x-mcp-session", "x-mcp-session-id", "Authorization"],
+      allowedHeaders: [
+        "Content-Type",
+        "x-mcp-session",
+        "x-mcp-session-id",
+        "Authorization",
+      ],
       exposedHeaders: ["x-mcp-session-id"],
     })
   );
