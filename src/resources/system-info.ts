@@ -30,7 +30,6 @@ const systemInfoModule: RegisterableModule = {
       "SystemMonitor",
       "system://SystemMonitor",
       {
-        name: "System Information",
         description: "Provides basic system information about the server, including platform, architecture, Node.js version, uptime, and memory usage. This resource offers insights into the operational environment of the MCP system.",
       },
       () => systemInfoHandler()

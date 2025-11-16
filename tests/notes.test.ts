@@ -3,7 +3,9 @@ import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
 import { getFirstContentText } from "./helpers/test-asserts.js";
 import createNoteModule from "../src/tools/notes/create-note.js";
+import deleteNoteModule from "../src/tools/notes/delete-note.js";
 import getAllNotesModule from "../src/tools/notes/get-all-notes.js";
+import updateNoteModule from "../src/tools/notes/update-note.js";
 import type { JottyClient, JottyNote } from "../src/lib/jotty-client.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
@@ -15,7 +17,12 @@ describe("Notes Tool Unit Tests", () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
-    testClient = { createNote: sandbox.stub(), getAllNotes: sandbox.stub() };
+    testClient = {
+      createNote: sandbox.stub(),
+      getAllNotes: sandbox.stub(),
+      updateNote: sandbox.stub(),
+      deleteNote: sandbox.stub(),
+    };
   });
 
   afterEach(() => { sandbox.restore(); });
@@ -87,6 +94,42 @@ describe("Notes Tool Unit Tests", () => {
       const response = await handler();
       const text = getFirstContentText(response);
       assert.deepStrictEqual(JSON.parse(text), []);
+    });
+  });
+
+  describe("update-note", () => {
+    let handler: ToolHandler;
+
+    beforeEach(() => {
+      const { serverMock, getHandler } = createServerMock();
+      updateNoteModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
+    });
+
+    it("updates a note", async () => {
+      const expected: JottyNote = { id: "1", title: "Updated Title", content: "Updated Content", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      (testClient.updateNote as sinon.SinonStub).resolves(expected);
+      const response = await handler({ noteId: "1", title: "Updated Title", content: "Updated Content" });
+      const text = getFirstContentText(response);
+      assert.deepStrictEqual(JSON.parse(text), expected);
+    });
+  });
+
+  describe("delete-note", () => {
+    let handler: ToolHandler;
+
+    beforeEach(() => {
+      const { serverMock, getHandler } = createServerMock();
+      deleteNoteModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
+    });
+
+    it("deletes a note", async () => {
+      const expected = { success: true };
+      (testClient.deleteNote as sinon.SinonStub).resolves(expected);
+      const response = await handler({ noteId: "1" });
+      const text = getFirstContentText(response);
+      assert.deepStrictEqual(JSON.parse(text), expected);
     });
   });
 });

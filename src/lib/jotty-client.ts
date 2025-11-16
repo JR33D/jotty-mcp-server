@@ -62,13 +62,16 @@ export class JottyClient {
   private async makeRequest<T>(
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
-    body?: object
+    body?: object,
+    requiresAuth = true
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
-      'x-api-key': this.apiKey,
       'Content-Type': 'application/json',
     };
+    if (requiresAuth) {
+      headers['x-api-key'] = this.apiKey;
+    }
 
     console.log(`[JottyClient] Making ${method} request to ${url}`);
     if (body != null) {
@@ -142,6 +145,25 @@ export class JottyClient {
 
   async getExportProgress(exportId: string): Promise<ExportStatus> {
     return this.makeRequest<ExportStatus>(`/api/exports/${exportId}`);
+  }
+
+  async getHealth(): Promise<{ status: string; version: string; timestamp: string }> {
+    return this.makeRequest<{ status: string; version: string; timestamp: string }>('/api/health', 'GET', undefined, false);
+  }
+
+  async updateNote(
+    noteId: string,
+    note: { title: string; content?: string; category?: string; originalCategory?: string }
+  ): Promise<JottyNote> {
+    return this.makeRequest<JottyNote>(`/api/notes/${noteId}`, 'PUT', note);
+  }
+
+  async deleteNote(noteId: string): Promise<{ success: boolean }> {
+    return this.makeRequest<{ success: boolean }>(`/api/notes/${noteId}`, 'DELETE');
+  }
+
+  async rebuildLinkIndex(username: string): Promise<{ success: boolean; message: string }> {
+    return this.makeRequest<{ success: boolean; message: string }>('/api/admin/rebuild-index', 'POST', { username });
   }
 }
 

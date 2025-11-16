@@ -2,11 +2,13 @@ import assert from "node:assert";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import * as sinon from "sinon";
 import { getFirstContentText } from "./helpers/test-asserts.js";
+import healthModule from "../src/resources/health.js";
 import exportDataModule from "../src/tools/admin/export-data.js";
 import getCategoriesModule from "../src/tools/admin/get-categories.js";
 import getExportProgressModule from "../src/tools/admin/get-export-progress.js";
 import getSummaryModule from "../src/tools/admin/get-summary.js";
 import getUserInfoModule from "../src/tools/admin/get-user-info.js";
+import rebuildLinkIndexModule from "../src/tools/admin/rebuild-link-index.js";
 import type { JottyClient } from "../src/lib/jotty-client.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
@@ -25,6 +27,8 @@ describe("Admin Tool Unit Tests", () => {
       getExportProgress: sandbox.stub(),
       getSummary: sandbox.stub(),
       getUserInfo: sandbox.stub(),
+      rebuildLinkIndex: sandbox.stub(),
+      getHealth: sandbox.stub(),
     };
   });
 
@@ -126,6 +130,42 @@ describe("Admin Tool Unit Tests", () => {
       const response = await handler({ username: "testuser" });
       const text = getFirstContentText(response);
       assert.deepStrictEqual(JSON.parse(text), userInfo);
+    });
+  });
+
+  describe("rebuild-link-index", () => {
+    let handler: ToolHandler;
+
+    beforeEach(() => {
+      const { serverMock, getHandler } = createServerMock();
+      rebuildLinkIndexModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
+    });
+
+    it("rebuilds the link index for a user", async () => {
+      const result = { success: true, message: "Successfully rebuilt link index for testuser" };
+      (testClient.rebuildLinkIndex as sinon.SinonStub).resolves(result);
+      const response = await handler({ username: "testuser" });
+      const text = getFirstContentText(response);
+      assert.deepStrictEqual(JSON.parse(text), result);
+    });
+  });
+
+  describe("health", () => {
+    let handler: ToolHandler;
+
+    beforeEach(() => {
+      const { serverMock, getHandler } = createServerMock();
+      healthModule.register(serverMock, { jottyClient: testClient as JottyClient });
+      handler = getHandler();
+    });
+
+    it("returns health status", async () => {
+      const health = { status: "healthy", version: "1.9.3", timestamp: "2025-10-31T21:15:57.009Z" };
+      (testClient.getHealth as sinon.SinonStub).resolves(health);
+      const response = await handler({});
+      const text = getFirstContentText(response);
+      assert.deepStrictEqual(JSON.parse(text), health);
     });
   });
 });

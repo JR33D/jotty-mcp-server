@@ -37,10 +37,9 @@ const timestampModule: RegisterableModule = {
         },
       }),
       {
-        name: "Timestamp",
         description: "Generates the current timestamp in various formats (ISO, Unix, readable). This utility provides time-related information to agents within the MCP system.",
       },
-      (uri, variables: TimestampVariables) => {
+      (uri: URL, variables: TimestampVariables) => {
         const { format } = variables;
         const now = new Date();
         let timestamp: string;
