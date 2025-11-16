@@ -19,12 +19,17 @@ This server exposes 11 tools to interact with your Jotty data:
 - **Notes:**
   - `AllNotesFetcher`: Retrieves all notes associated with the authenticated user from the Jotty API. This tool facilitates access to user-specific note data within the MCP system.
   - `NoteCreator`: Facilitates the creation of new notes for the authenticated user via the Jotty API. This tool allows agents to add new textual information to the user's collection within the MCP system.
+  - `NoteUpdater`: Updates an existing note for the authenticated user via the Jotty API.
+  - `NoteDeleter`: Deletes an existing note for the authenticated user via the Jotty API.
 - **Admin & Data Management:**
   - `UserInfoFetcher`: Retrieves detailed information for a specified Jotty user. This administrative tool provides insights into user profiles within the MCP system.
   - `CategoryFetcher`: Retrieves all available categories from the Jotty API. This administrative tool provides a comprehensive list of categorization options within the MCP system.
   - `AccountSummaryFetcher`: Retrieves summary statistics for the authenticated Jotty account. This administrative tool provides an overview of account activity and data within the MCP system.
   - `DataExporter`: Initiates a full export of Jotty user data in a specified format. This administrative tool enables comprehensive data backup and migration within the MCP system.
   - `ExportProgressMonitor`: Monitors the progress of a specified data export operation. This administrative tool provides real-time status updates for data export tasks within the MCP system.
+  - `LinkIndexRebuilder`: Rebuilds the internal link index for a specific user.
+- **System:**
+  - `HealthChecker`: Checks the health of the Jotty API.
 
 ## Installation
 

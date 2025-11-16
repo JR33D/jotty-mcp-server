@@ -90,6 +90,34 @@ z.object({
 -   **Handler:** Calls `jottyClient.createNote({ title, content, category })`.
 -   **Returns:** A JSON `Note` object.
 
+### `NoteUpdater`
+
+-   **Description:** Updates an existing note for the authenticated user via the Jotty API.
+-   **Schema:**
+    ```typescript
+z.object({
+  noteId: z.string(),
+  title: z.string(),
+  content: z.string().optional(),
+  category: z.string().optional(),
+  originalCategory: z.string().optional(),
+})
+    ```
+-   **Handler:** Calls `jottyClient.updateNote(noteId, { title, content, category, originalCategory })`.
+-   **Returns:** A JSON `Note` object.
+
+### `NoteDeleter`
+
+-   **Description:** Deletes an existing note for the authenticated user via the Jotty API.
+-   **Schema:**
+    ```typescript
+z.object({
+  noteId: z.string(),
+})
+    ```
+-   **Handler:** Calls `jottyClient.deleteNote(noteId)`.
+-   **Returns:** A JSON object with a `success` boolean.
+
 ---
 
 ## Admin Tools
@@ -149,3 +177,26 @@ z.object({
     ```
 -   **Handler:** Calls `jottyClient.getExportProgress(exportId)`.
 -   **Returns:** A JSON `ExportStatus` object.
+
+### `LinkIndexRebuilder`
+
+-   **Description:** Rebuilds the internal link index for a specific user.
+-   **Schema:**
+    ```typescript
+z.object({
+  username: z.string(),
+})
+    ```
+-   **Handler:** Calls `jottyClient.rebuildLinkIndex(username)`.
+-   **Returns:** A JSON object with a `success` boolean and a `message`.
+
+---
+
+## System Resources
+
+### `HealthChecker`
+
+-   **Description:** Checks the health of the Jotty API.
+-   **Schema:** `z.object({})` (No input parameters)
+-   **Handler:** Calls `jottyClient.getHealth()`.
+-   **Returns:** A JSON object with `status`, `version`, and `timestamp`.
