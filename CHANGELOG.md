@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/JR33D/jotty-mcp-server/compare/v1.1.0...v1.2.0) (2025-11-16)
+
+
+### Features
+
+* **mcp-sdk:** Upgrade @modelcontextprotocol/sdk and adapt server code ([#19](https://github.com/JR33D/jotty-mcp-server/issues/19)) ([c6a1589](https://github.com/JR33D/jotty-mcp-server/commit/c6a1589bafbb6acadac241a947c25d54bff56605))
+* **mcp-tools:** Add new tools for Jotty API endpoints ([#17](https://github.com/JR33D/jotty-mcp-server/issues/17)) ([37be715](https://github.com/JR33D/jotty-mcp-server/commit/37be715d43dd928482daae77892ec36f1fe59c4a))
+
 ## [1.1.0](https://github.com/JR33D/jotty-mcp-server/compare/v1.0.0...v1.1.0) (2025-11-08)
 
 
