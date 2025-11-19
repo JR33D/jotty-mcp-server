@@ -57,7 +57,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-sonarjs": "^3.0.5",
     "hygen": "^6.2.11",
-    "knip": "^5.69.1",
+    "knip": "^5.70.0",
     "rimraf": "^6.1.0",
     "sinon": "^21.0.0",
     "typescript": "^5.9.3",
