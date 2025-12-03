@@ -37,10 +37,10 @@
     "node": ">=20.11.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.23.0",
+    "@modelcontextprotocol/sdk": "^1.24.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "fast-glob": "^3.3.3",
     "winston": "^3.18.3",
     "zod": "^3.25.76"
@@ -48,7 +48,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
+    "@types/express": "^5.0.6",
     "@types/node": "^24.10.1",
     "@types/sinon": "^21.0.0",
     "@typescript-eslint/parser": "^8.48.0",
