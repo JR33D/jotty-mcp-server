@@ -37,12 +37,12 @@
     "node": ">=20.11.0"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.24.2",
+    "@modelcontextprotocol/sdk": "^1.24.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "fast-glob": "^3.3.3",
-    "winston": "^3.18.3",
+    "winston": "^3.19.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
