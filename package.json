@@ -60,7 +60,7 @@
     "knip": "^5.82.1",
     "rimraf": "^6.1.2",
     "sinon": "^21.0.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.54.0"
   },
   "bin": {
