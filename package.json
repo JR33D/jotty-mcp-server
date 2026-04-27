@@ -55,7 +55,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-sonarjs": "^3.0.6",
+    "eslint-plugin-sonarjs": "^4.0.3",
     "hygen": "^6.2.11",
     "knip": "^5.82.1",
     "rimraf": "^6.1.2",
